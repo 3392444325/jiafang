@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-linen text-ink font-body antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display font-normal;
+  }
+  ::selection {
+    background: rgba(179, 155, 107, 0.25);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f7f3ec;
+}
+::-webkit-scrollbar-thumb {
+  background: #c9bba2;
+  border-radius: 8px;
+}
+
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-[1400px] px-5 md:px-10;
+  }
+  .eyebrow {
+    @apply text-[11px] uppercase tracking-[0.35em] text-gold-deep;
+  }
+  .btn-primary {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-ink px-8 py-3.5 text-[13px] uppercase tracking-[0.22em] text-ivory transition-colors duration-300 hover:bg-gold-deep;
+  }
+  .btn-ghost {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-ink/25 px-8 py-3.5 text-[13px] uppercase tracking-[0.22em] text-ink transition-colors duration-300 hover:border-gold-deep hover:text-gold-deep;
+  }
+  .btn-ghost-light {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-white/50 px-8 py-3.5 text-[13px] uppercase tracking-[0.22em] text-white transition-colors duration-300 hover:bg-white hover:text-ink;
+  }
+  .field {
+    @apply w-full border border-ink/15 bg-white/70 px-4 py-3 text-sm text-ink outline-none transition placeholder:text-ink/30 focus:border-gold-deep focus:bg-white;
+  }
+  .v-text {
+    writing-mode: vertical-rl;
+    letter-spacing: 0.5em;
+  }
+  .hairline-t {
+    @apply border-t border-ink/10;
+  }
+  .link-underline {
+    @apply relative;
+  }
+  .link-underline::after {
+    content: '';
+    @apply absolute left-0 -bottom-0.5 h-px w-0 bg-current transition-all duration-300;
+  }
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+}
+
+/* 滚动渐入 */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
