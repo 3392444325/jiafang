@@ -44,44 +44,44 @@ onMounted(() => {
   <AdminLayout>
     <div class="space-y-5">
       <div class="flex items-center justify-between">
-        <p class="text-xs tracking-[0.25em] text-ink/50">
+        <p class="text-[14px] tracking-[0.25em] text-ink/80">
           全部评论（{{ reviews.length }}）· 平均评分 {{ avg }} / 5.0
         </p>
       </div>
 
       <p
         v-if="reviews.length === 0"
-        class="border border-ink/10 bg-ivory py-20 text-center text-sm text-ink/40"
+        class="border border-ink/10 bg-ivory py-20 text-center text-[15px] text-ink/75"
       >
         暂无用户评论
       </p>
 
       <div v-for="r in reviews" :key="r.id" class="border border-ink/10 bg-ivory px-6 py-5">
-        <div class="flex flex-wrap items-center justify-between gap-3 text-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 text-[15px]">
           <div class="flex items-center gap-4">
             <span class="tracking-[0.15em] text-gold">
-              {{ '★'.repeat(r.rating) }}<span class="text-ink/20">{{ '☆'.repeat(5 - r.rating) }}</span>
+              {{ '★'.repeat(r.rating) }}<span class="text-ink/70">{{ '☆'.repeat(5 - r.rating) }}</span>
             </span>
-            <span class="text-xs text-ink/60">
+            <span class="text-[14px] text-ink/75">
               {{ r.userName || r.userEmail }}
             </span>
-            <span class="text-[11px] text-ink/40">
+            <span class="text-[14px] text-ink/75">
               {{ formatDate(r.createdAt) }}
             </span>
           </div>
           <form @submit.prevent="deleteReview(r)">
             <button
               type="submit"
-              class="cursor-pointer border border-ink/20 px-4 py-1.5 text-[11px] tracking-[0.2em] text-ink/70 transition-colors hover:border-red-700/50 hover:text-red-800"
+              class="cursor-pointer border border-ink/20 px-4 py-1.5 text-[14px] tracking-[0.2em] text-ink/80 transition-colors hover:border-red-700/50 hover:text-red-800"
             >
               删除
             </button>
           </form>
         </div>
-        <p class="mt-3 text-sm leading-loose text-ink/75">「{{ r.content }}」</p>
+        <p class="mt-3 text-[15px] leading-loose text-ink/85">「{{ r.content }}」</p>
         <router-link
           :to="`/products/${r.productSlug}`"
-          class="link-underline mt-3 inline-block text-[11px] tracking-[0.15em] text-ink/45 hover:text-gold-deep"
+          class="link-underline mt-3 inline-block text-[14px] tracking-[0.15em] text-ink/75 hover:text-gold-deep"
         >
           {{ r.productName }} →
         </router-link>

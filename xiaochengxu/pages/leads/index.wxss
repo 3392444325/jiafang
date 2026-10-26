@@ -1,0 +1,52 @@
+.page {
+  padding-bottom: 60rpx;
+}
+
+/* 品牌语 */
+.lead-head {
+  padding: 48rpx 32rpx 32rpx;
+}
+.lead-slogan {
+  margin-top: 12rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+/* 类型卡 */
+.type-card {
+  margin: 0 24rpx 20rpx;
+  padding: 28rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  border: 2rpx solid transparent;
+}
+.type-on {
+  border-color: var(--gold);
+}
+.type-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+.type-desc {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+
+/* 表单 */
+.form {
+  margin: 32rpx 24rpx 0;
+  padding: 36rpx 28rpx;
+}
+.form-item {
+  margin-bottom: 28rpx;
+}
+.ph {
+  color: var(--muted);
+}
+.lead-note {
+  width: 100%;
+  height: 200rpx;
+}

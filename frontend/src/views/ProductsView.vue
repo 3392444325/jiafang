@@ -75,6 +75,15 @@ watch(() => route.query, load)
 
 <template>
   <div class="pt-[72px]">
+    <!-- 页头横幅 -->
+    <Reveal>
+      <img
+        src="/images/heroes/hero-1.jpg"
+        alt="ST.KELLY产品"
+        class="h-64 w-full object-cover md:h-80"
+      />
+    </Reveal>
+
     <!-- 页头 -->
     <div class="wrap pb-12 pt-16 text-center">
       <Reveal v-if="loaded">
@@ -82,13 +91,13 @@ watch(() => route.query, load)
         <h1 class="mt-4 font-display text-4xl tracking-[0.15em] text-ink">
           {{ title }}
         </h1>
-        <p class="mt-4 text-sm tracking-[0.2em] text-ink/50">
+        <p class="mt-4 text-[15px] tracking-[0.2em] text-ink/80">
           {{ desc }}
         </p>
         <router-link
           v-if="kw"
           :to="sort === 'default' ? '/products' : `/products?sort=${sort}`"
-          class="mt-5 inline-block text-[11px] uppercase tracking-[0.25em] text-gold-deep transition-colors hover:text-ink"
+          class="mt-5 inline-block text-[14px] uppercase tracking-[0.25em] text-gold-deep transition-colors hover:text-ink"
         >
           ✕ 清除搜索
         </router-link>
@@ -98,10 +107,10 @@ watch(() => route.query, load)
     <!-- 筛选栏 -->
     <div class="hairline-t border-b border-ink/10">
       <div class="wrap flex flex-wrap items-center justify-between gap-4 py-4">
-        <div class="flex flex-wrap items-center gap-x-7 gap-y-2 text-[13px] tracking-[0.15em]">
+        <div class="flex flex-wrap items-center gap-x-7 gap-y-2 text-[15px] tracking-[0.15em]">
           <router-link
             :to="buildQuery({ cat: 'all' })"
-            :class="cat === 'all' ? 'text-gold-deep' : 'text-ink/55 transition-colors hover:text-ink'"
+            :class="cat === 'all' ? 'text-gold-deep' : 'text-ink/80 transition-colors hover:text-ink'"
           >
             全部
           </router-link>
@@ -109,13 +118,13 @@ watch(() => route.query, load)
             v-for="c in categories"
             :key="c.slug"
             :to="buildQuery({ cat: c.slug })"
-            :class="cat === c.slug ? 'text-gold-deep' : 'text-ink/55 transition-colors hover:text-ink'"
+            :class="cat === c.slug ? 'text-gold-deep' : 'text-ink/80 transition-colors hover:text-ink'"
           >
             {{ c.name }}
           </router-link>
         </div>
-        <div class="flex items-center gap-x-5 text-[11px] tracking-[0.15em] text-ink/45">
-          <span class="uppercase tracking-[0.3em] text-ink/30">Sort</span>
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] tracking-[0.15em] text-ink/75">
+          <span class="uppercase tracking-[0.3em] text-ink/70">Sort</span>
           <router-link
             v-for="s in SORTS"
             :key="s.key"
@@ -131,7 +140,7 @@ watch(() => route.query, load)
     <!-- 商品展示 -->
     <div class="wrap py-16">
       <div v-if="cards.length === 0" class="py-24 text-center">
-        <p class="font-display text-2xl tracking-[0.15em] text-ink/60">
+        <p class="font-display text-2xl tracking-[0.15em] text-ink/75">
           {{ kw ? `未找到与「${kw}」相关的商品` : '该系列正在筹备中，敬请期待。' }}
         </p>
         <router-link to="/products" class="btn-primary mt-10">
@@ -147,19 +156,19 @@ watch(() => route.query, load)
         >
           <div class="flex flex-wrap items-end justify-between gap-4 py-8 md:px-0">
             <div>
-              <p class="text-[10px] uppercase tracking-[0.3em] text-gold-deep">
+              <p class="text-[13px] uppercase tracking-[0.3em] text-gold-deep">
                 0{{ String(g.category.sort).padStart(2, '0') }} · {{ g.category.nameEn }}
               </p>
               <h2 class="mt-2 font-display text-2xl tracking-[0.15em] text-ink">
                 {{ g.category.name }}
               </h2>
-              <p v-if="g.category.tagline" class="mt-1 text-xs tracking-[0.15em] text-ink/50">
+              <p v-if="g.category.tagline" class="mt-1 text-[14px] tracking-[0.15em] text-ink/80">
                 {{ g.category.tagline }}
               </p>
             </div>
             <router-link
               :to="`/products?cat=${g.category.slug}`"
-              class="text-[11px] uppercase tracking-[0.25em] text-gold-deep transition-colors hover:text-ink"
+              class="text-[14px] uppercase tracking-[0.25em] text-gold-deep transition-colors hover:text-ink"
             >
               查看整个系列 →
             </router-link>

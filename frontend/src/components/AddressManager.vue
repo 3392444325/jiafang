@@ -99,39 +99,39 @@ async function setDefault(id) {
     <div
       v-for="a in addresses"
       :key="a.id"
-      class="flex flex-wrap items-center justify-between gap-4 border border-ink/10 bg-ivory px-6 py-5 text-sm"
+      class="flex flex-wrap items-center justify-between gap-4 border border-ink/10 bg-ivory px-6 py-5 text-[15px]"
     >
       <div class="min-w-64 flex-1">
         <p class="tracking-[0.15em] text-ink">
           {{ a.name }} · {{ a.phone }}
           <span
             v-if="a.isDefault"
-            class="ml-3 border border-gold/40 bg-gold/10 px-2 py-0.5 text-[10px] tracking-[0.2em] text-gold-deep"
+            class="ml-3 border border-gold/40 bg-gold/10 px-2 py-0.5 text-[13px] tracking-[0.2em] text-gold-deep"
           >
             默认
           </span>
         </p>
-        <p class="mt-1 text-xs leading-relaxed text-ink/55">
+        <p class="mt-1 text-[14px] leading-relaxed text-ink/80">
           {{ a.province }} {{ a.city }} {{ a.district ?? '' }} {{ a.detail }}
         </p>
       </div>
-      <div class="flex items-center gap-4 text-[11px] tracking-[0.2em]">
+      <div class="flex items-center gap-4 text-[14px] tracking-[0.2em]">
         <button
           v-if="!a.isDefault"
           @click="setDefault(a.id)"
-          class="cursor-pointer text-ink/50 transition-colors hover:text-gold-deep"
+          class="cursor-pointer text-ink/80 transition-colors hover:text-gold-deep"
         >
           设为默认
         </button>
         <button
           @click="startEdit(a)"
-          class="cursor-pointer text-ink/50 transition-colors hover:text-gold-deep"
+          class="cursor-pointer text-ink/80 transition-colors hover:text-gold-deep"
         >
           编辑
         </button>
         <button
           @click="remove(a.id)"
-          class="cursor-pointer text-ink/50 transition-colors hover:text-red-700"
+          class="cursor-pointer text-ink/80 transition-colors hover:text-red-700"
         >
           删除
         </button>
@@ -147,7 +147,7 @@ async function setDefault(id) {
       @submit.prevent="save"
       class="grid gap-4 border border-ink/10 bg-ivory p-6 sm:grid-cols-2"
     >
-      <p class="text-xs tracking-[0.25em] text-ink/50 sm:col-span-2">
+      <p class="text-[14px] tracking-[0.25em] text-ink/80 sm:col-span-2">
         {{ editingId ? '编辑地址' : '新增地址' }}
       </p>
       <input v-model="form.name" class="field" placeholder="收货人姓名" required />
@@ -163,12 +163,12 @@ async function setDefault(id) {
       />
       <label
         v-if="editingId === null"
-        class="flex cursor-pointer items-center gap-3 text-xs tracking-[0.15em] text-ink/60 sm:col-span-2"
+        class="flex cursor-pointer items-center gap-3 text-[14px] tracking-[0.15em] text-ink/75 sm:col-span-2"
       >
         <input v-model="isDefault" type="checkbox" class="accent-[#8F7A50]" />
         设为默认地址
       </label>
-      <p v-if="error" class="text-xs tracking-[0.15em] text-red-700 sm:col-span-2">
+      <p v-if="error" class="text-[14px] tracking-[0.15em] text-red-700 sm:col-span-2">
         {{ error }}
       </p>
       <div class="flex items-center gap-4 sm:col-span-2">
@@ -178,7 +178,7 @@ async function setDefault(id) {
         <button
           type="button"
           @click="cancel"
-          class="cursor-pointer text-[11px] tracking-[0.2em] text-ink/50 hover:text-ink"
+          class="cursor-pointer text-[14px] tracking-[0.2em] text-ink/80 hover:text-ink"
         >
           取消
         </button>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#B9C2B4"/>
+      <stop offset="1" stop-color="#8A998A"/>
+    </linearGradient>
+    <radialGradient id="hl" cx="0.28" cy="0.22" r="0.95">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#EDE9DC" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#EDE9DC" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shade" cx="0.78" cy="0.85" r="0.9">
+      <stop offset="0" stop-color="#1C1B19" stop-opacity="0"/>
+      <stop offset="1" stop-color="#1C1B19" stop-opacity="0.11000000000000001"/>
+    </radialGradient>
+    <pattern id="weaveA" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <path d="M0 0H16" stroke="#1C1B19" stroke-opacity="0.055" stroke-width="1"/>
+      <path d="M0 0V16" stroke="#1C1B19" stroke-opacity="0.055" stroke-width="1"/>
+    </pattern>
+    <pattern id="weaveB" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(-32)">
+      <path d="M0 0H26" stroke="#FFFFFF" stroke-opacity="0.0385" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#g)"/>
+  <rect width="1920" height="1080" fill="url(#hl)"/>
+  <ellipse cx="1382.3999999999999" cy="324" rx="652.8000000000001" ry="280.8" fill="url(#glow)"/>
+  <circle cx="1574.3999999999999" cy="216" r="302.40000000000003" fill="#FFFFFF" opacity="0.07"/>
+  <circle cx="307.2" cy="842.4" r="388.8" fill="#1C1B19" opacity="0.045"/>
+  <rect width="1920" height="1080" fill="url(#weaveA)"/>
+  <rect width="1920" height="1080" fill="url(#weaveB)"/>
+  <rect width="1920" height="1080" fill="url(#shade)"/>
+</svg>

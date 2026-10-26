@@ -30,7 +30,7 @@ const isActive = (href) => {
         <h1 class="mt-3 font-display text-2xl tracking-[0.15em] text-ink">
           绮云商家后台
         </h1>
-        <p class="mt-2 text-xs tracking-[0.15em] text-ink/45">
+        <p class="mt-2 text-[14px] tracking-[0.15em] text-ink/75">
           {{ auth.displayName }} · 管理员
         </p>
         <nav class="mt-8 flex gap-x-6 gap-y-3 lg:flex-col">
@@ -38,8 +38,8 @@ const isActive = (href) => {
             v-for="n in nav"
             :key="n.href"
             :to="n.href"
-            class="text-sm tracking-[0.2em] transition-colors"
-            :class="isActive(n.href) ? 'text-gold-deep' : 'text-ink/60 hover:text-gold-deep'"
+            class="text-[15px] tracking-[0.2em] transition-colors"
+            :class="isActive(n.href) ? 'text-gold-deep' : 'text-ink/75 hover:text-gold-deep'"
           >
             {{ n.label }}
           </router-link>

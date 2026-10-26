@@ -1,0 +1,246 @@
+.page {
+  padding-bottom: 40rpx;
+}
+.loading-tip,
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 160rpx 0;
+}
+
+/* 图集 */
+.gallery {
+  width: 100%;
+  height: 750rpx;
+  background: var(--sand);
+}
+.gallery-img,
+.gallery-fallback {
+  width: 100%;
+  height: 100%;
+}
+.gallery-fallback {
+  background: var(--sand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clay);
+  font-size: 56rpx;
+  letter-spacing: 10rpx;
+}
+.gallery-count {
+  position: fixed;
+  top: 660rpx;
+  right: 32rpx;
+  background: rgba(28, 27, 25, 0.55);
+  color: #fff;
+  font-size: 22rpx;
+  border-radius: 999rpx;
+  padding: 4rpx 18rpx;
+  z-index: 5;
+}
+
+/* 信息 */
+.info {
+  margin: 24rpx;
+  padding: 28rpx;
+}
+.info-name {
+  margin-top: 16rpx;
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+.info-sub {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+.info-meta {
+  margin-top: 16rpx;
+  display: flex;
+  gap: 32rpx;
+  font-size: 22rpx;
+  color: var(--muted);
+}
+.info-cat {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+.info-cat-label {
+  margin-right: 16rpx;
+  color: var(--muted);
+}
+
+/* 区块 */
+.card {
+  margin: 0 24rpx 24rpx;
+  padding: 28rpx;
+}
+.sec-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  margin-bottom: 20rpx;
+}
+.desc {
+  font-size: 27rpx;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+
+/* 参数 */
+.spec-row {
+  display: flex;
+  gap: 24rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--line);
+  font-size: 26rpx;
+}
+.spec-row:last-child {
+  border-bottom: none;
+}
+.spec-label {
+  width: 140rpx;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.spec-value {
+  flex: 1;
+  color: var(--ink-soft);
+}
+
+/* 评价 */
+.sec-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sec-head-row .sec-title {
+  margin-bottom: 0;
+}
+.review-btn {
+  font-size: 24rpx;
+  color: var(--gold-deep);
+  border: 1rpx solid var(--gold-deep);
+  border-radius: 999rpx;
+  padding: 6rpx 24rpx;
+}
+.review-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.review-item:last-child {
+  border-bottom: none;
+}
+.review-head {
+  display: flex;
+  justify-content: space-between;
+}
+.review-name {
+  font-size: 26rpx;
+  color: var(--ink);
+}
+.review-stars {
+  font-size: 22rpx;
+  color: var(--gold);
+}
+.review-content {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.empty-sm {
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+/* 相关推荐 */
+.related-title {
+  margin: 0 0 20rpx 24rpx;
+}
+.related-scroll {
+  white-space: nowrap;
+  padding-left: 24rpx;
+}
+.related-item {
+  display: inline-block;
+  width: 220rpx;
+  margin-right: 20rpx;
+  vertical-align: top;
+}
+.related-img,
+.related-fallback {
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 16rpx;
+  background: var(--sand);
+}
+.related-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clay);
+  font-size: 36rpx;
+  letter-spacing: 6rpx;
+}
+.related-name {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-foot-space {
+  height: 160rpx;
+}
+
+/* 底部操作栏 */
+.fixed-bar .stepper {
+  display: flex;
+  align-items: center;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+.step-btn {
+  width: 64rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: var(--ink-soft);
+  background: var(--linen);
+}
+.step-num {
+  width: 72rpx;
+  text-align: center;
+  font-size: 28rpx;
+}
+.bar-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+}
+.bar-cart {
+  background: var(--ivory);
+  color: var(--ink);
+  border: 1rpx solid rgba(28, 27, 25, 0.3);
+}
+.bar-buy {
+  background: var(--ink);
+  color: var(--ivory);
+}
+.bar-btn.disabled {
+  opacity: 0.5;
+}

@@ -48,6 +48,14 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private Date paidAt;
 
+    /** 客户撤销申请标记（仅已付款订单可申请，商家审核通过后取消） */
+    @Column(name = "cancel_requested", nullable = false)
+    private Boolean cancelRequested = false;
+
+    @Column(name = "cancel_requested_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date cancelRequestedAt;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 

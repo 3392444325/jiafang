@@ -1,0 +1,74 @@
+<view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+
+<block wx:elif="{{o}}">
+  <!-- 状态区 -->
+  <view class="status-hero card">
+    <view class="sh-text st-{{o.status}}">{{o.statusText}}</view>
+    <view wx:if="{{o.status === 'PAID'}}" class="sh-sub">支付方式：{{o.payText}}　{{o.paidText}}</view>
+    <view wx:if="{{o.cancelRequested}}" class="sh-badge">撤销审核中</view>
+  </view>
+
+  <!-- 收货信息 -->
+  <view class="card sec" wx:if="{{addr}}">
+    <view class="sec-title">收货信息</view>
+    <view class="d-row"><text class="d-label">收件人</text><text>{{addr.name}}</text></view>
+    <view class="d-row"><text class="d-label">电话</text><text>{{addr.phone}}</text></view>
+    <view class="d-row"><text class="d-label">地区</text><text>{{addr.region}}</text></view>
+    <view class="d-row"><text class="d-label">详细</text><text>{{addr.detail}}</text></view>
+  </view>
+
+  <!-- 商品清单 -->
+  <view class="card sec">
+    <view class="sec-title">商品清单</view>
+    <view class="g-item" wx:for="{{items}}" wx:key="idx">
+      <image
+        wx:if="{{item.image && !item._err}}"
+        class="g-img"
+        src="{{item.image}}"
+        mode="aspectFill"
+        data-idx="{{index}}"
+        binderror="onImgErr"
+      />
+      <view wx:else class="g-img g-fallback"><text>ST.KELLY</text></view>
+      <view class="g-info">
+        <view class="g-name">{{item.nameSnap}}</view>
+        <view class="g-qty">× {{item.qty}}</view>
+      </view>
+      <price fen="{{item.priceFen * item.qty}}" size="sm" />
+    </view>
+  </view>
+
+  <!-- 金额 -->
+  <view class="card sec">
+    <view class="sec-title">金额</view>
+    <view class="amt-row">
+      <text class="d-label">商品合计</text>
+      <price fen="{{o.totalFen}}" size="lg" />
+    </view>
+  </view>
+
+  <!-- 订单信息 -->
+  <view class="card sec">
+    <view class="sec-title">订单信息</view>
+    <view class="d-row">
+      <text class="d-label">订单号</text>
+      <view class="d-no" bindtap="onCopy">{{o.orderNo}}<text class="copy-tag">复制</text></view>
+    </view>
+    <view class="d-row"><text class="d-label">下单时间</text><text>{{o.createdText}}</text></view>
+  </view>
+
+  <view class="page-foot-space"></view>
+
+  <!-- 操作栏 -->
+  <view class="fixed-bar safe-bottom" wx:if="{{o.status === 'PENDING_PAYMENT'}}">
+    <view class="bar-ghost" bindtap="onCancel">取消订单</view>
+    <view class="bar-buy {{paying ? 'disabled' : ''}}" bindtap="onPay">
+      {{paying ? '支付中…' : '立即支付'}}
+    </view>
+  </view>
+  <view class="fixed-bar safe-bottom" wx:elif="{{o.status === 'PAID' && !o.cancelRequested}}">
+    <view class="bar-ghost full" bindtap="onRefund">申请退款</view>
+  </view>
+</block>
+
+<view wx:else class="empty">订单不存在或已删除</view>

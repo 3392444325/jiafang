@@ -1,0 +1,41 @@
+<view class="page">
+  <!-- 品牌头部 -->
+  <view class="brand-head">
+    <text class="brand-eyebrow">ST.KELLY</text>
+    <view class="brand-title">欢迎回来</view>
+    <view class="brand-line"></view>
+  </view>
+
+  <!-- 登录表单 -->
+  <view class="form card">
+    <view class="form-item">
+      <text class="form-label">邮箱</text>
+      <input
+        class="field"
+        type="text"
+        placeholder="官网注册的邮箱账号"
+        placeholder-class="ph"
+        value="{{email}}"
+        data-k="email"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input
+        class="field"
+        password
+        placeholder="请输入密码"
+        placeholder-class="ph"
+        value="{{password}}"
+        data-k="password"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="btn-primary {{busy ? 'disabled' : ''}}" bindtap="submit">
+      {{busy ? '登录中…' : '登　录'}}
+    </view>
+    <view class="swap" bindtap="goRegister">还没有账号？去注册 ›</view>
+    <view class="hint">提示：账号为官网注册的邮箱账号</view>
+  </view>
+</view>

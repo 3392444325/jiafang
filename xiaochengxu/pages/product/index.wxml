@@ -1,0 +1,110 @@
+<view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+
+<view wx:elif="{{p}}" class="page">
+  <!-- 图集 -->
+  <swiper class="gallery" indicator-dots="{{imgs.length > 1}}" circular indicator-color="rgba(255,255,255,0.4)" indicator-active-color="#b39b6b" bindchange="onImgChange">
+    <swiper-item wx:for="{{imgs}}" wx:key="index">
+      <image
+        wx:if="{{item}}"
+        class="gallery-img"
+        src="{{item}}"
+        mode="aspectFill"
+        data-idx="{{index}}"
+        binderror="onImgErr"
+      />
+      <view wx:else class="gallery-fallback"><text>ST.KELLY</text></view>
+    </swiper-item>
+  </swiper>
+  <view wx:if="{{imgs.length > 1}}" class="gallery-count">{{cur + 1}}/{{imgs.length}}</view>
+
+  <!-- 信息 -->
+  <view class="info card">
+    <price fen="{{p.priceFen}}" compare="{{p.compareAtFen}}" size="lg" />
+    <view class="info-name">{{p.name}}</view>
+    <view wx:if="{{p.subtitle}}" class="info-sub">{{p.subtitle}}</view>
+    <view class="info-meta">
+      <text>已售 {{p.sales}}</text>
+      <text>库存 {{p.stock}}</text>
+    </view>
+    <view class="info-cat" wx:if="{{p.category}}">
+      <text class="info-cat-label">系列</text>
+      <text>{{p.category.name}}</text>
+    </view>
+  </view>
+
+  <!-- 描述 -->
+  <view class="card sec">
+    <view class="sec-title">商品描述</view>
+    <text class="desc">{{p.description}}</text>
+  </view>
+
+  <!-- 参数 -->
+  <view class="card sec" wx:if="{{p.material || p.specs.length}}">
+    <view class="sec-title">规格参数</view>
+    <view class="spec-row" wx:if="{{p.material}}">
+      <text class="spec-label">材质</text>
+      <text class="spec-value">{{p.material}}</text>
+    </view>
+    <view class="spec-row" wx:for="{{p.specs}}" wx:key="label">
+      <text class="spec-label">{{item.label}}</text>
+      <text class="spec-value">{{item.value}}</text>
+    </view>
+  </view>
+
+  <!-- 评价 -->
+  <view class="card sec" wx:if="{{reviews.length}}">
+    <view class="sec-head-row">
+      <view class="sec-title">用户评价（{{reviews.length}}）</view>
+      <view wx:if="{{p.canReview}}" class="review-btn" bindtap="goReview">写评价</view>
+    </view>
+    <view class="review-item" wx:for="{{reviews}}" wx:key="id">
+      <view class="review-head">
+        <text class="review-name">{{item.userName || '匿名用户'}}</text>
+        <text class="review-stars">{{item.rating}} 星</text>
+      </view>
+      <text class="review-content">{{item.content}}</text>
+    </view>
+  </view>
+  <view class="card sec" wx:elif="{{p.canReview}}">
+    <view class="sec-head-row">
+      <view class="sec-title">评价</view>
+      <view class="review-btn" bindtap="goReview">写评价</view>
+    </view>
+    <view class="empty-sm">购买后即可评价</view>
+  </view>
+
+  <!-- 相关推荐 -->
+  <view class="sec" wx:if="{{related.length}}">
+    <view class="sec-title related-title">相关推荐</view>
+    <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="related-scroll">
+      <view class="related-item" wx:for="{{related}}" wx:key="slug" data-slug="{{item.slug}}" bindtap="goRelated">
+        <image
+          wx:if="{{item.image && !item._err}}"
+          class="related-img"
+          src="{{item.image}}"
+          mode="aspectFill"
+          data-idx="{{index}}"
+          binderror="onRelatedErr"
+        />
+        <view wx:else class="related-fallback"><text>ST.KELLY</text></view>
+        <text class="related-name">{{item.name}}</text>
+        <price fen="{{item.priceFen}}" size="sm" />
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="page-foot-space"></view>
+
+  <!-- 底部操作栏 -->
+  <view class="fixed-bar safe-bottom">
+    <view class="stepper">
+      <view class="step-btn" data-d="-1" bindtap="step">−</view>
+      <text class="step-num">{{qty}}</text>
+      <view class="step-btn" data-d="1" bindtap="step">＋</view>
+    </view>
+    <view class="bar-btn bar-cart {{adding ? 'disabled' : ''}}" bindtap="onAdd">加入购物车</view>
+    <view class="bar-btn bar-buy {{adding ? 'disabled' : ''}}" bindtap="onBuy">立即购买</view>
+  </view>
+</view>
+
+<view wx:else class="empty">商品不存在或已下架</view>

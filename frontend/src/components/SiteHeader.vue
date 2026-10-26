@@ -39,34 +39,26 @@ const isShop = computed(() => {
   )
 })
 
+// 品牌官网的匿名访客在桌面端右侧（图标区）已无任何可见内容，
+// 隐藏该容器以避免父级 gap 在导航右侧残留空白、影响导航右对齐
+const rightEmptyOnDesktop = computed(
+  () => !isShop.value && !auth.isAdmin && !auth.isLoggedIn
+)
+
 const tone = computed(() => (solid.value ? 'text-ink' : 'text-white'))
 const chrome = computed(() =>
   solid.value
     ? 'bg-linen/85 backdrop-blur-md border-b border-ink/10'
     : 'bg-transparent border-b border-white/10'
 )
-const navCls = (to) => {
-  const base = `link-underline text-[13px] tracking-[0.2em] transition-colors ${
-    solid.value ? 'hover:text-gold-deep' : 'hover:!text-gold'
-  }`
-  // 当前页对应的导航项：文字变金色 + 下划线常显，突出选中态
-  return isActive(to)
-    ? `${base} ${solid.value ? 'text-gold-deep' : '!text-gold'} after:w-full`
-    : base
-}
-// 胶囊按钮（品牌官网 / 官方商城）的选中高亮
-const pillCls = (to) =>
-  `border px-4 py-1.5 text-[12px] tracking-[0.25em] transition-colors ${
-    isActive(to) ? 'border-gold text-gold' : 'border-current hover:border-gold hover:text-gold'
-  }`
+const navLink = computed(
+  () =>
+    `link-underline text-[15px] tracking-[0.2em] transition-colors hover:text-gold-deep ${
+      solid.value ? '' : 'hover:text-gold!'
+    }`
+)
 
 const userName = computed(() => auth.user?.name ?? auth.user?.email ?? '')
-
-// 导航高亮：判断目标路由是否为当前页面（首页精确匹配，其余按前缀匹配）
-function isActive(to) {
-  if (to === '/') return route.path === '/'
-  return route.path === to || route.path.startsWith(to + '/')
-}
 
 // 路由切换时收起移动端菜单与搜索面板（对应原 prevPath 逻辑）
 watch(pathname, () => {
@@ -126,25 +118,42 @@ const vFocus = { mounted: (el) => el.focus() }
 </script>
 
 <template>
-  <!-- 顶部公告栏 -->
-  <div class="bg-ink text-ivory">
-    <div class="wrap flex items-center justify-center gap-4 py-2.5 text-[11px] tracking-[0.18em]">
-      <span class="hidden text-gold md:inline">ZHIYUN LIVING</span>
-      <span class="opacity-80">秋季焕新 · 全场满 ¥1,299 减 ¥150 · 新会员注册即赠 ¥100 礼遇</span>
-    </div>
-  </div>
-
   <header :class="['sticky top-0 z-50 transition-all duration-500', chrome]">
     <div
-      :class="['wrap relative flex items-center justify-between', tone, 'transition-colors duration-500']"
+      :class="['wrap relative flex items-center justify-between gap-5 lg:gap-6', tone, 'transition-colors duration-500']"
       :style="{ minHeight: HEADER_H + 'px' }"
     >
-      <!-- 左侧：桌面导航 -->
-      <nav class="hidden items-center gap-6 lg:flex">
+      <!-- 左侧：品牌商标 -->
+      <router-link to="/" class="shrink-0 -ml-2 md:-ml-6">
+        <svg
+          role="img"
+          aria-label="SK.KELLEY"
+          viewBox="-8 -40 1068 250"
+          preserveAspectRatio="none"
+          class="h-7 w-[159px] md:h-8 md:w-[182px]"
+          :class="solid ? 'text-gold-deep' : 'text-gold'"
+        >
+          <title>SK.KELLEY</title>
+          <text
+            x="0"
+            y="152"
+            fill="currentColor"
+            font-family="Arial, Helvetica, sans-serif"
+            font-size="170"
+            font-weight="900"
+            font-style="italic"
+            textLength="1010"
+            lengthAdjust="spacingAndGlyphs"
+          >SK.KELLEY</text>
+        </svg>
+      </router-link>
+
+      <!-- 右侧：桌面导航 -->
+      <nav class="ml-auto hidden items-center gap-6 lg:flex">
         <template v-if="isShop">
-          <router-link to="/shop" :class="navCls('/shop')">商城首页</router-link>
+          <router-link to="/shop" :class="navLink">商城首页</router-link>
           <div class="group relative">
-            <span class="cursor-default text-[13px] tracking-[0.2em]">分类甄选</span>
+            <span class="cursor-default text-[15px] tracking-[0.2em]">分类甄选</span>
             <div
               class="invisible absolute left-1/2 top-full -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100"
             >
@@ -153,67 +162,56 @@ const vFocus = { mounted: (el) => el.focus() }
                   v-for="c in categories"
                   :key="c.slug"
                   :to="`/products?cat=${c.slug}`"
-                  class="flex items-baseline justify-between px-6 py-2.5 text-[13px] tracking-[0.15em] transition-colors hover:bg-sand hover:text-gold-deep"
+                  class="flex items-baseline justify-between px-6 py-2.5 text-[15px] tracking-[0.15em] transition-colors hover:bg-sand hover:text-gold-deep"
                 >
                   <span>{{ c.name }}</span>
-                  <span class="text-[9px] uppercase tracking-[0.2em] text-ink/40">{{ c.nameEn }}</span>
+                  <span class="text-[13px] uppercase tracking-[0.2em] text-ink/75">{{ c.nameEn }}</span>
                 </router-link>
               </div>
             </div>
           </div>
-          <router-link to="/products" :class="navCls('/products')">产品展示</router-link>
-          <router-link to="/orders" :class="navCls('/orders')">我的订单</router-link>
-          <router-link to="/account/addresses" :class="navCls('/account/addresses')">地址簿</router-link>
-          <router-link to="/" :class="pillCls('/')">
-            品牌官网
-          </router-link>
+          <router-link to="/products" :class="navLink">产品展示</router-link>
+          <router-link to="/orders" :class="navLink">我的订单</router-link>
+          <router-link to="/account/addresses" :class="navLink">地址簿</router-link>
+          <router-link to="/" :class="navLink">品牌官网</router-link>
         </template>
         <template v-else>
-          <router-link to="/" :class="navCls('/')">首页</router-link>
-          <router-link to="/story" :class="navCls('/story')">品牌</router-link>
-          <router-link to="/news" :class="navCls('/news')">动态</router-link>
-          <router-link to="/franchise" :class="navCls('/franchise')">招商</router-link>
-          <router-link to="/group-buy" :class="navCls('/group-buy')">团购</router-link>
-          <router-link to="/cooperation" :class="navCls('/cooperation')">合作</router-link>
-          <router-link to="/careers" :class="navCls('/careers')">人才</router-link>
-          <router-link to="/shop" :class="pillCls('/shop')">
-            官方商城
-          </router-link>
+          <router-link to="/" :class="navLink">首页</router-link>
+          <router-link to="/story" :class="navLink">品牌</router-link>
+          <router-link to="/news" :class="navLink">动态</router-link>
+          <router-link to="/franchise" :class="navLink">招商</router-link>
+          <router-link to="/group-buy" :class="navLink">团购</router-link>
+          <router-link to="/shop" :class="navLink">官方商城</router-link>
         </template>
       </nav>
 
-      <!-- 中部：品牌字标 -->
-      <router-link to="/" class="absolute left-1/2 -translate-x-1/2 text-center">
-        <span class="block font-display text-[26px] leading-none tracking-[0.35em]">织云</span>
-        <span class="mt-1.5 block text-[8px] uppercase tracking-[0.5em] opacity-70">Zhiyun Living</span>
-      </router-link>
-
       <!-- 右侧：账户 / 购物车 / 移动端菜单 -->
-      <div class="flex items-center gap-5 lg:gap-6">
+      <div :class="['flex items-center gap-5 lg:gap-6', rightEmptyOnDesktop ? 'lg:hidden' : '']">
         <router-link
           v-if="auth.isAdmin"
           to="/admin"
-          :class="['hidden lg:block', navCls('/admin')]"
+          :class="['hidden lg:block', navLink]"
         >
           管理后台
         </router-link>
         <div v-if="auth.isLoggedIn" class="hidden items-center gap-5 lg:flex">
-          <router-link to="/orders" :class="navCls('/orders')">{{ userName }}</router-link>
+          <router-link to="/orders" :class="navLink">{{ userName }}</router-link>
           <button
-            class="cursor-pointer text-[11px] tracking-[0.2em] opacity-60 transition-opacity hover:opacity-100"
+            class="cursor-pointer text-[14px] tracking-[0.2em] opacity-60 transition-opacity hover:opacity-100"
             @click="logout"
           >
             退出
           </button>
         </div>
         <router-link
-          v-else
+          v-if="!auth.isLoggedIn && isShop"
           to="/login"
-          :class="['hidden lg:block', navCls('/login')]"
+          :class="['hidden lg:block', navLink]"
         >
           登录 / 注册
         </router-link>
         <button
+          v-if="isShop"
           aria-label="搜索"
           :class="[
             'hidden cursor-pointer transition-colors lg:block',
@@ -234,6 +232,7 @@ const vFocus = { mounted: (el) => el.focus() }
           </svg>
         </button>
         <router-link
+          v-if="isShop"
           to="/cart"
           class="relative transition-colors hover:text-gold-deep"
           aria-label="购物车"
@@ -251,13 +250,13 @@ const vFocus = { mounted: (el) => el.focus() }
           </svg>
           <span
             v-if="cart.count > 0"
-            class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold-deep px-1 text-[10px] leading-none text-white"
+            class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold-deep px-1 text-[13px] leading-none text-white"
           >
             {{ cart.count }}
           </span>
         </router-link>
         <button
-          class="flex cursor-pointer flex-col gap-1.5 lg:hidden"
+          class="-m-3 flex cursor-pointer flex-col gap-1.5 p-3 lg:hidden"
           aria-label="菜单"
           @click="open = !open"
         >
@@ -284,7 +283,7 @@ const vFocus = { mounted: (el) => el.focus() }
           fill="none"
           stroke="currentColor"
           stroke-width="1.5"
-          class="text-ink/40"
+          class="text-ink/75"
         >
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />
@@ -293,12 +292,12 @@ const vFocus = { mounted: (el) => el.focus() }
           v-focus
           v-model="kw"
           placeholder="搜索：鹅绒被 · 蚕丝被 · 贡缎 · 婚嫁礼盒…"
-          class="flex-1 bg-transparent text-sm tracking-[0.15em] outline-none placeholder:text-ink/30"
+          class="flex-1 bg-transparent text-[15px] tracking-[0.15em] outline-none placeholder:text-ink/70"
         />
         <button type="submit" class="btn-primary px-6 py-2.5">搜索</button>
       </form>
-      <div class="wrap flex flex-wrap items-center gap-x-6 gap-y-2 pb-6 text-[11px] tracking-[0.2em] text-ink/45">
-        <span class="uppercase tracking-[0.3em] text-ink/30">热门</span>
+      <div class="wrap flex flex-wrap items-center gap-x-6 gap-y-2 pb-6 text-[14px] tracking-[0.2em] text-ink/75">
+        <span class="uppercase tracking-[0.3em] text-ink/70">热门</span>
         <button
           v-for="t in ['鹅绒被', '蚕丝被', '四件套', '婚嫁礼盒']"
           :key="t"
@@ -316,6 +315,7 @@ const vFocus = { mounted: (el) => el.focus() }
     <div :style="{ height: HEADER_H + 'px' }" />
     <nav class="flex flex-col gap-2 overflow-y-auto px-8 py-10">
       <form
+        v-if="isShop"
         class="mb-4 flex items-center gap-2 border border-ink/15 bg-ivory px-4 py-3"
         @submit.prevent="goSearch(mKw)"
       >
@@ -326,7 +326,7 @@ const vFocus = { mounted: (el) => el.focus() }
           fill="none"
           stroke="currentColor"
           stroke-width="1.5"
-          class="text-ink/40"
+          class="text-ink/75"
         >
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />
@@ -334,9 +334,9 @@ const vFocus = { mounted: (el) => el.focus() }
         <input
           v-model="mKw"
           placeholder="搜索商品：鹅绒被 · 蚕丝被 · 礼盒…"
-          class="w-full bg-transparent text-sm tracking-[0.15em] outline-none placeholder:text-ink/30"
+          class="w-full bg-transparent text-[15px] tracking-[0.15em] outline-none placeholder:text-ink/70"
         />
-        <button type="submit" class="cursor-pointer text-[11px] uppercase tracking-[0.3em] text-gold-deep">
+        <button type="submit" class="cursor-pointer text-[14px] uppercase tracking-[0.3em] text-gold-deep">
           搜索
         </button>
       </form>
@@ -344,11 +344,9 @@ const vFocus = { mounted: (el) => el.focus() }
       <router-link to="/" class="py-3 font-display text-2xl tracking-[0.3em]">首页</router-link>
       <router-link to="/story" class="py-3 font-display text-2xl tracking-[0.3em]">品牌</router-link>
       <router-link to="/news" class="py-3 font-display text-2xl tracking-[0.3em]">动态</router-link>
-      <p class="eyebrow mt-6 pb-1">走进织云</p>
+      <p class="eyebrow mt-6 pb-1">走进 ST.KELLY</p>
       <router-link to="/franchise" class="py-3 font-display text-2xl tracking-[0.3em]">招商加盟</router-link>
       <router-link to="/group-buy" class="py-3 font-display text-2xl tracking-[0.3em]">团购定制</router-link>
-      <router-link to="/cooperation" class="py-3 font-display text-2xl tracking-[0.3em]">商务合作</router-link>
-      <router-link to="/careers" class="py-3 font-display text-2xl tracking-[0.3em]">人才招聘</router-link>
       <p class="eyebrow mt-6 pb-1">官方商城</p>
       <router-link to="/shop" class="py-3 font-display text-2xl tracking-[0.3em]">商城首页</router-link>
       <router-link to="/products" class="py-3 font-display text-2xl tracking-[0.3em]">产品展示</router-link>
@@ -356,19 +354,19 @@ const vFocus = { mounted: (el) => el.focus() }
         v-for="c in categories"
         :key="c.slug"
         :to="`/products?cat=${c.slug}`"
-        class="py-2.5 pl-2 text-sm tracking-[0.25em] text-ink-soft"
+        class="py-2.5 pl-2 text-[15px] tracking-[0.25em] text-ink-soft"
       >
         {{ c.name }}
-        <span class="ml-3 text-[9px] uppercase tracking-[0.2em] text-ink/40">{{ c.nameEn }}</span>
+        <span class="ml-3 text-[13px] uppercase tracking-[0.2em] text-ink/75">{{ c.nameEn }}</span>
       </router-link>
-      <div class="hairline-t mt-6 flex flex-col gap-3 pt-6 text-sm tracking-[0.25em]">
+      <div class="hairline-t mt-6 flex flex-col gap-3 pt-6 text-[15px] tracking-[0.25em]">
         <template v-if="auth.isLoggedIn">
           <router-link to="/orders">我的订单</router-link>
           <router-link v-if="auth.isAdmin" to="/admin">管理后台</router-link>
-          <button class="cursor-pointer text-left text-ink/50" @click="logout">退出登录</button>
+          <button class="cursor-pointer text-left text-ink/80" @click="logout">退出登录</button>
         </template>
-        <router-link v-else to="/login">登录 / 注册</router-link>
-        <router-link to="/cart">购物车 ({{ cart.count }})</router-link>
+        <router-link v-if="!auth.isLoggedIn && isShop" to="/login">登录 / 注册</router-link>
+        <router-link v-if="isShop" to="/cart">购物车 ({{ cart.count }})</router-link>
       </div>
     </nav>
   </div>

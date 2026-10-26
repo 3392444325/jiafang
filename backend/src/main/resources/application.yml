@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8082
   servlet:
     context-path: /api
 
@@ -7,10 +7,17 @@ spring:
   application:
     name: zhiyun-backend
   datasource:
-    url: jdbc:mysql://localhost:3306/zhiyun?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&characterEncoding=utf8&useUnicode=true
-    username: root
-    password: 'zrj1479638785'
+    # ── 数据库连接全部参数化，换库/换密码无需改本文件 ──────────────
+    # 优先级：环境变量  >  application-local.yml（本地/服务器私有配置，不入 git）  >  冒号后的默认值
+    # 详细说明见项目根目录 DEPLOY.md
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:zhiyun}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&characterEncoding=utf8&useUnicode=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  config:
+    # 可选导入工作目录下的 application-local.yml（存在则生效，不存在跳过）
+    # 用于本地开发或甲方服务器上的私有配置（数据库地址/账号/密码）
+    import: optional:file:./application-local.yml
   jpa:
     hibernate:
       # 首次启动自动建表；后续启动只更新不删除
@@ -20,6 +27,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+  servlet:
+    multipart:
+      # 与 UploadController 的 5MB 校验保持一致（默认 1MB 会导致大图在进 Controller 前就被拒）
+      max-file-size: 5MB
+      max-request-size: 10MB
   sql:
     init:
       mode: never
@@ -29,3 +41,8 @@ spring:
 logging:
   level:
     org.hibernate.SQL: warn
+
+zy:
+  cookie:
+    # 生产环境启用 HTTPS 后设为 true，session cookie 将带 Secure 标记
+    secure: false

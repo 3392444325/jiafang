@@ -10,6 +10,10 @@
 | #001 | 2026-09-09 | 登录/注册后购物车条目丢失、登出后角标不消失 | 后端 AuthService/Session 实体、前端 auth/cart store |
 | #002 | 2026-09-09 | 登录状态下刷新受保护页面被踢回登录页 | 前端 router/index.js 路由守卫 |
 | #003 | 2026-09-09 | 导航栏点击后无"当前页"高亮反馈，按钮不突出 | 前端 SiteHeader.vue（含 Tailwind important 语法修正） |
+| #004 | 2026-09-15 | 全库代码检查：取消订单不回补库存、首页 N+1 查询、会话清理留孤儿数据、购物车请求无错误兜底 | 后端 AdminService/ProductService/SessionCleanupTask/CartItemRepository、前端 stores/cart.js |
+| #005 | 2026-09-15 | 运行时多轮 API 测试：404/405 被全局异常处理器误报为 500 | 后端 GlobalExceptionHandler |
+| #006 | 2026-10-08 | start.bat 启动报错：脚本乱码、后端编译失败（Repository 缺方法）、数据库密码配置错误 | start.bat、CartItemRepository、SessionRepository、application-local.yml |
+| #007 | 2026-10-15 | 后端编译失败复发（deleteOrphanSessionItems 缺失 + 执行顺序会被外键阻塞）、application-local.yml 密码被还原 | SessionCleanupTask、CartItemRepository、SessionRepository、application-local.yml |
 
 ---
 
@@ -282,3 +286,248 @@ const pillCls = (to) =>
 1. "官方商城"/"品牌官网"胶囊按钮的选中态在视觉上不可见——点击后导航整体切换为另一组子导航（`isShop` 分支），按钮本身不再渲染，属设计使然，非缺陷。
 2. 激活判定规则：首页 `/` 精确匹配；其余路由按前缀匹配（如 `/orders` 覆盖 `/orders/:id`），与导航语义一致。
 3. 经验教训：Tailwind v3 与 v4 的 important 语法不同（v3 前缀 `!` / v4 后缀 `!`），混用会导致类静默失效，需以项目实际版本为准。
+
+---
+
+## #004 全库代码检查：4 处 bug 修复（批量审查报告）
+
+> 日期：2026-09-15
+> 涉及模块：后端 AdminService、ProductService、SessionCleanupTask、CartItemRepository；前端 stores/cart.js
+
+### 审查范围
+
+- **后端**（Spring Boot）：controller / service / entity / repository / config / util 全部核心文件。重点核查：事务边界、并发扣库存、越权鉴权、金额计算、订单状态机、定时任务、Cookie 会话安全。
+- **前端**（Vue 3 + Pinia）：stores / router / api / 核心组件（CheckoutForm、PayPanel、SiteHeader、CartView、ProductEditView 等）。重点核查：状态同步、竞态与重复提交、金额显示精度、内存泄漏、错误处理。
+
+### Bug 1（严重）：管理员取消订单不回补库存/销量
+
+- **位置**：`AdminService.updateOrderStatus`
+- **问题**：创建订单时扣减库存、增加销量；管理员把订单改为"已取消"后，库存与销量不回退——商品库存永久泄漏，卖一件少一件。
+- **触发场景**：管理员在后台把任意订单状态改为 CANCELLED。
+- **修复**：状态切换为 CANCELLED 且原状态非 CANCELLED 时，遍历订单明细回补 `stock + qty`、`sales - qty`（销量下限 0）；重复取消跳过，防止二次回补。
+
+### Bug 2（性能）：首页接口 N+1 全表查询
+
+- **位置**：`ProductService.getHomeData`
+- **问题**：循环每个分类时都调用一次 `findAllWithCategory()`（全量商品查询），10 个分类 = 10 次全表加载。
+- **修复**：查询提到循环外执行一次，循环内改为内存过滤；同时把 `p.getCategoryId().equals(c.getId())` 调整为 `c.getId().equals(p.getCategoryId())` 防空指针。
+
+### Bug 3（数据膨胀）：会话清理遗留孤儿购物车条目
+
+- **位置**：`SessionCleanupTask` / `CartItemRepository`
+- **问题**：定时任务用批量 JPQL 删除过期会话，**批量删除不触发 JPA 级联**，挂在会话上的游客购物车条目 `session_id` 永久悬空，成为永远查不到也删不掉的垃圾数据。
+- **修复**：`CartItemRepository` 新增 `deleteOrphanSessionItems()`（删除 session_id 指向不存在会话的条目），定时任务同事务调用。
+
+### Bug 4（健壮性）：购物车列表请求无错误兜底
+
+- **位置**：前端 `stores/cart.js → fetchItems`
+- **问题**：无 try-catch——接口失败时抛出未处理的 Promise 异常，且 items 残留旧数据。
+- **修复**：与 `fetchCount` 风格一致，catch 后清空 items。
+
+### 验证结果
+
+- 后端 `mvn compile` 通过；重启后冒烟测试 `/api/products`、`/api/home`、`/api/cart` 均 HTTP 200。
+- 前端 Vite 热更新自动生效。
+
+### 审查确认无问题的部分（无需修改）
+
+- **防超卖**：下单使用悲观锁 `findAllByIdForUpdate` 锁定商品后校验库存，正确。
+- **越权防护**：AdminController 全部 15 个接口均先 `assertAdmin`；订单/购物车/地址均校验归属（水平越权已防护）。
+- **金额计算**：全程整数（分）运算，无浮点误差；元转分用 `Math.round` 正确。
+- **订单状态机**：支付接口校验"仅待付款可支付"，无漏洞。
+- **会话安全**：token 用 SecureRandom 48 位十六进制、HttpOnly + SameSite=Lax；登录失败 5 次锁定 15 分钟；游客会话创建按 IP 限流。
+- **前端防重复提交**：结算/支付按钮均有 busy/disabled 保护；支付倒计时定时器在卸载时正确清理，无内存泄漏。
+
+---
+
+## #005 运行时多轮 API 测试：404/405 误报 500
+
+> 日期：2026-09-15
+> 测试方式：模拟真实请求多轮遍历游客/用户/管理员全流程（购物车增删改合并、注册登录登出、下单支付状态机、取消回补、越权、边界值、地址簿），共 33 项断言。
+
+### 发现的 Bug（已修复）
+
+**404/405 被全局异常处理器误报为 500**
+
+- **位置**：`GlobalExceptionHandler`
+- **问题**：不存在的路径/商品（`NoResourceFoundException`）和不支持的请求方法（`HttpRequestMethodNotSupportedException`）都落入兜底 `Exception` 处理器，返回 500 并打印 ERROR 级完整堆栈——错误语义失真，且日志被爬虫扫描类请求刷屏。
+- **修复**：新增两个 `@ExceptionHandler`，分别映射 404（"资源不存在"）与 405（"请求方法不支持"），不再打错误堆栈。
+- **验证**：`/api/products/no-such` → 404；`PUT /api/cart` → 405；`/api/cart/` → 404（修复前全部 500）。
+
+### 测试通过项（无需修改）
+
+| 类别 | 验证内容 | 结果 |
+| --- | --- | --- |
+| 购物车 | 游客加购/重复加购合并/数量边界 clamp(1-99)/PATCH 更新/删除/跨会话越权 403 | 全部通过 |
+| 注册登录 | 注册合并游客购物车（数量保留）/登出清空/重新登录恢复/重复邮箱 409/非法邮箱 400 | 全部通过 |
+| 订单 | 创建订单扣库存/金额正确（整数分）/支付状态机（重复支付 400）/越权访问他人订单 404/管理员取消回补库存销量（#004 修复生效：200→198→200、销量 967 回退） | 全部通过 |
+| 权限 | 非管理员访问后台 403、未登录下单/评论/订单列表 401 | 全部通过 |
+| 边界 | 空购物车下单拒绝、缺参数 400、不存在商品 404、未购买评论拒绝 400 | 全部通过 |
+| 地址 | 增/查/改/删全流程 | 全部通过 |
+
+### 说明
+
+- `GET /api/auth/me` 未登录时返回 `{"user":{}}` 为前后端既定约定，前端以 `user.id` 判断登录态，行为正确。
+- 登录失败限流（内存 Map）为单机设计，重启清零，属可接受行为。
+- 测试产生的脏数据（测试用户/订单/线索）与被扰动的商品库存销量已全部清理恢复为种子值。
+
+---
+
+## #006 start.bat 启动报错：脚本乱码 + 后端编译失败 + 数据库密码配置错误
+
+> 日期：2026-10-08
+> 背景：项目在此期间新增了新闻/设计师/内容管理模块，并引入了参数化配置（application-local.yml 本地私有配置，不入 git），start.bat 与部分代码未同步。
+
+### Bug 1：start.bat 中文全部乱码
+
+- **原因**：脚本文件编码被破坏（UTF-8 中文被存成 GBK 乱码），且 `chcp 65001` 指令丢失；`timeout /t 5` 在双击运行时还会报"输入重定向不受支持"。
+- **修复**：重写为 UTF-8 编码 + CRLF 换行，第 2 行恢复 `chcp 65001`；`timeout` 改为 `ping -n 6 127.0.0.1` 计时（无输入依赖）。
+
+### Bug 2：后端编译失败（5 个错误）
+
+- **现象**：`CartService` 找不到 `sumQtyByUserId/sumQtyBySessionId`；`SessionCleanupTask` 中 `deleteByExpiresAtBefore` 返回值 void 无法转为 long。
+- **原因**：代码扩展过程中 `CartItemRepository`/`SessionRepository` 与调用方不同步，缺少方法。
+- **修复**：`CartItemRepository` 补充两个按 qty 求和的统计方法（`coalesce(sum(qty),0)`）；`SessionRepository.deleteByExpiresAtBefore` 声明改为返回 `long`（Spring Data 派生删除支持返回删除条数）。
+
+### Bug 3：后端连不上数据库（Access denied）
+
+- **现象**：启动日志 `Access denied for user 'root'@'localhost' (using password: YES)`，EntityManagerFactory 初始化失败，8080 永远不监听。
+- **原因**：新引入的本地配置 `backend/application-local.yml` 中密码仍是旧密码 `Liuchang16@$%`，而数据库实际密码已是 `zrj1479638785`；主配置 `application.yml` 的密码已参数化（`${DB_PASSWORD:}`），实际生效值来自 local 文件。
+- **修复**：`backend/application-local.yml` 密码同步为 `zrj1479638785`。**以后改 MySQL 密码只需改这一个文件**（该文件不入 git，换机器部署时复制 `application-local.yml.example` 改密码即可）。
+
+### 验证结果
+
+- `mvn compile` 通过；start.bat 三步全部正常、中文无乱码；后端 `Started ZhiyunApplication`、`/api/products` 返回 200；前端 5173 正常。
+
+---
+
+## #007 后端编译失败复发 + 会话清理顺序缺陷 + application-local.yml 密码被还原
+
+> 日期：2026-10-15
+> 背景：#006 修复后本地文件一度被还原（疑似 git 操作覆盖未提交文件），本轮重新运行项目时问题复发；同时修正了 #004 原方案的隐藏缺陷。
+
+### Bug 1：后端编译失败（2 个错误）
+
+- **现象**：`SessionCleanupTask.java` 两处编译错误——`deleteByExpiresAtBefore` 返回值 void 无法转为 long（#006 修复被还原）；调用 `cartRepo.deleteOrphanSessionItems()` 但 `CartItemRepository` 中不存在该方法（#004 记录的方法实际从未落入代码）。
+- **修复**：
+  1. `SessionRepository.deleteByExpiresAtBefore` 重新声明为返回 `long`。
+  2. `CartItemRepository` 不再补 `deleteOrphanSessionItems()`，改为派生删除方法 `long deleteBySession_ExpiresAtBefore(Date expires)`（见 Bug 2）。
+
+### Bug 2：会话清理任务的隐藏缺陷（执行顺序会被外键阻塞）
+
+- **原因**：原方案"先删过期会话、再删孤儿购物车条目"在真实库中行不通——`cart_items.session_id` 对 `sessions` 有外键约束（ON DELETE RESTRICT），且孤儿条目（session_id 指向不存在的会话）在外键保护下根本不可能存在。只要过期会话还挂着购物车条目，删除会话就会触发外键异常，整个清理事务回滚。
+- **修复**：调整执行顺序——先删"挂载在已过期会话上的"购物车条目（`deleteBySession_ExpiresAtBefore`，此时会话尚未删除），再删过期会话，事务内两步一致，外键不再阻塞。
+
+### Bug 3：application-local.yml 密码被还原为旧密码
+
+- **现象**：文件中密码又变回 `Liuchang16@$%`（#006 Bug 3 的复发）。
+- **修复**：重新同步为 `zrj1479638785`。
+
+### 验证结果
+
+- `mvn spring-boot:run` 编译通过，`Started ZhiyunApplication in 4.664s`，日志确认"数据库已存在种子数据，跳过初始化"（即 zhiyun.sql 已导入）。
+- `/api/products`、`/api/content` 返回 200；前端 Vite 5173 正常启动；浏览器实测首页/商城/商品详情渲染正常、控制台无 JS 错误、62 条 API 请求无一失败。
+
+---
+
+## #008 后端编译失败（收款码支付改造遗留）+ MySQL root 密码变更同步
+
+> 日期：2026-10-18
+> 背景：代码新增了收款码支付改造（PayController 等）后编译报 3 个错误；同时用户要求将 MySQL root 密码改为 zr1479638785。
+
+### Bug 1：后端编译失败（3 个错误）
+
+- **现象**：
+  1. SessionCleanupTask.java:28 找不到 CartItemRepository.deleteBySession_ExpiresAtBefore(Date)（#007 的声明未落入代码）；
+  2. SessionCleanupTask.java:29 SessionRepository.deleteByExpiresAtBefore 返回 void 无法转为 long（#007 修复再次被还原）；
+  3. PayController.java:28 找不到 SiteContentService.getPayConfig()（收款码改造计划中声明但未实现）。
+- **修复**：
+  1. SessionRepository.deleteByExpiresAtBefore 重新声明为返回 long；
+  2. CartItemRepository 补充派生删除方法 long deleteBySession_ExpiresAtBefore(Date expires)；
+  3. SiteContentService 新增 getPayConfig()（读取 pay.* 前缀键并去掉前缀返回）和 getAllPublic()（过滤 pay.* 键），ContentController 公开接口 /api/content 改用 getAllPublic()，防止收款码配置经公开接口泄露（配套收款码改造计划的安全要求）。
+
+### Bug 2：数据库密码变更
+
+- **操作**：MySQL root 密码由 zrj1479638785 改为 zr1479638785（ALTER USER + FLUSH PRIVILEGES），ackend/application-local.yml 同步更新（原文件中密码为 123456，与实际库密码不一致，一并修正）。
+
+### 验证结果
+
+- mvn spring-boot:run 编译通过，后端 8080 启动；/api/content、/api/auth/me 返回 200，公开接口无 pay.* 泄露；前端 Vite 5173 正常启动（200）。
+
+---
+
+## #009 首页点击导航不跳转（渲染崩溃）+ 首页精简为仅大图轮播
+
+> 日期：2026-10-18
+
+### Bug：首页点其它功能停在首页
+
+- **现象**：在首页点击顶部导航（品牌 / 动态 / 官方商城 等），地址栏 pathname 已变化，但页面主体 <main> 为空、视觉上仍停在首页。
+- **根因**：HomeView 渲染期抛错 Cannot read properties of null (reading 'name')。设计后台配置了大师联名图片但无对应联名商品时，collabVisible 为 true 而 collab 为 null，模板 :alt="collab.name" 崩溃；RouterView 使用 	ransition mode="out-in"，旧组件渲染崩溃导致过渡中断，新页面组件无法挂载。
+- **修复**：按需求精简首页，只保留顶部大图轮播（HeroCarousel），删除其下全部区块（品牌宣言、系列甄选、大师联名、口碑墙、官方商城导流、线下门店）；崩溃源区块随之下线。
+- **相关改动**：
+  - HomeView.vue：模板仅保留 <HeroCarousel :slides="slides" />，脚本仅保留 home.hero 内容键与 slides 计算属性（设计后台配置仍生效）。
+  - App.vue：首页隐藏全局页脚（showFooter = route.path !== '/'），其它页面保留。
+- **验证**：DOM 检查确认首页已无 五大系列 / 一夜好眠的证言 / 全国 1,200+ 门店 / 页脚文案，大图轮播文案 以东方织造、致一世安眠 正常渲染；直接访问 /story 主体渲染出 1473 字内容、/shop 正常渲染，跳转链路恢复正常。
+
+---
+
+## #010 从招商页跳转后其它页面空白（router-view 过渡卡死）
+
+> 日期：2026-10-18
+
+### 现象
+
+从招商页 /franchise 点击顶部导航跳到 /story、/news、/shop 等页面后，地址栏 pathname 已变化，但页面主体不渲染：<main> 只剩 `<!---->` 注释占位符，或残留旧页面内容（实测跳转后主体文本长度仍等于招商页自身的 277 字），页脚与页头正常，控制台无任何报错。
+
+### 根因
+
+App.vue 中 <router-view> 外层使用 `<transition name="fade" mode="out-in">`。离开招商页时该过渡状态机卡在离场阶段（isLeaving 一直为 true，离场回调未触发），导致旧页面不被移除、新页面组件永远不插入。该过渡只有 0.2s 淡入淡出，却会锁死路由渲染。
+
+### 修复
+
+- `App.vue`：移除 router-view 的 transition 包裹及已无用的 `.fade-*` 样式，直接渲染 `<component :is="Component" />`。
+- `PageHero.vue`：恢复原样（撤销为招商页新增的 `heightClass` 属性与默认插槽），共享组件不再被单页定制。
+- `FranchiseView.vue`：招商页改为自带英雄区块（不再以共享组件作为页面根承载整页），保持「英雄图 + 叠加意向申请」的一屏布局。
+
+### 验证
+
+- /franchise → /story：主体 1564 字，含「Our Story」；→ /news：775 字，含「Newsroom」；→ /shop：正常渲染官方商城；控制台均无报错。
+- 反向 /story → /franchise：含「招商加盟」，正常。
+- /franchise 直连：277 字，含「招商加盟」「加盟意向申请」。
+
+---
+
+## #011 品牌页顶部白边（页头区域未延伸英雄图）+ Logo 白框
+
+> 日期：2026-10-18
+
+### 现象
+
+品牌页 /story 顶部（公告栏与英雄图之间）出现一条米白色横条：页头区域背后是页面底色 linen（R247 G243 B236），而英雄图从下方才开始，形成明显的"白边"；对比首页英雄图则贯穿到页头背后、无此白条。另外页头品牌商标原为白底 JPEG 并外套 `bg-white/90` 白框，叠加在大图上时呈现一个白色方块。
+
+### 根因
+
+1. **白边**：品牌页根容器为 `<div class="pt-[72px]">`，英雄区块在内部用 `-mt-[72px]`。父容器的 padding-top 阻止了首个子元素外边距塌陷，负边距被抵消后英雄块刚好落在页头下方（页头高 72px），无法上提到透明页头之后，故页头区域露出页面底色。
+2. **Logo 白框**：`/images/logo.jpg` 为白底图片，且外层 `<span>` 带 `bg-white/90 px-3 py-1.5` 白底内边距，在深色大图/透明页头上显示为白色方块。
+
+### 修复方案
+
+- `StoryView.vue`：根容器去掉 `pt-[72px]`（改为 `<div>`），使英雄区块的 `-mt-[72px]` 生效、上提到透明页头之后，与首页 HeroCarousel 的表现一致。
+- `SiteHeader.vue`：移除品牌商标外层的白色底框 `<span class="flex items-center bg-white/90 px-3 py-1.5">`，Logo 直接以图片呈现。
+- 素材：由 `logo.jpg` 经边框洪泛填充去除白底，生成透明 PNG `/images/logo.png`（2400x434，保留字母内部白色针脚），并替换页头引用。
+
+### 验证
+
+- 无头浏览器（Edge headless）截图 /story：修复前页头区域为 linen 底色（白条），修复后页头区域为英雄图照片、无白条；下方「品牌哲学」区块衔接正常、无缝隙或重叠；导航自动切换为白色透明态文字。
+- 首页截图对照确认与品牌页表现一致。
+
+### 说明
+
+- 该白边成因仅出现在「透明页头（overlay）」页面；`/shop` 等其它 overlay 页若存在同样结构可按同一手法处理（本次仅按需求处理品牌页）。
+
+### 补充（用户反馈「logo 太突兀，底色改一下」）
+
+- **问题**：上一轮生成的 `/images/logo.png` 实际为 `Format24bppRgb`（无 Alpha 通道），四角为不透明纯白——白色底块并未真正去除，叠在英雄图上即显出一个白色方块，视觉突兀。用户选择「透明无底色」。
+- **修复**：以原始 `logo.jpg` 为源，用边框洪泛填充（阈值 RGB≥235，仅清除与边框连通的近白像素，保留字母内部白色针脚）重新生成 `logo.png`，输出为 `Format32bppArgb`，共清除 583,750 个近白像素；页头仍引用同一路径，无需改代码。
+- **验证**：像素采样四角 `A=0`（透明）；无头截图对照两种页头状态——overlay 态（首页 `/`、品牌页 `/story`）logo 字母直接叠在大图上、无白块且可辨识；solid 态（动态页 `/news`，米白页头）深色字母同样清晰。

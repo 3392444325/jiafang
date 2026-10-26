@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -20,6 +19,8 @@ public class OrderService {
     @Autowired private CartItemRepository cartRepo;
     @Autowired private ProductRepository productRepo;
     @Autowired private AddressRepository addressRepo;
+    @Autowired private OrderItemRepository orderItemRepo;
+    @Autowired private AdminService adminService;
 
     /** 我的订单列表 */
     @Transactional(readOnly = true)
@@ -50,19 +51,11 @@ public class OrderService {
         List<CartItem> items = cartRepo.findByUserIdWithProduct(userId);
         if (items.isEmpty()) throw BizException.bad("购物车是空的");
 
-        // 防超卖：悲观锁锁定涉及商品，校验上架状态与库存是否充足
-        List<String> productIds = items.stream().map(CartItem::getProductId).distinct().toList();
-        Map<String, Product> lockedProducts = productRepo.findAllByIdForUpdate(productIds).stream()
-                .collect(Collectors.toMap(Product::getId, p -> p));
+        // 库存预检：提前给出可读错误，实际扣减仍用条件更新兜底并发
         for (CartItem it : items) {
-            Product p = lockedProducts.get(it.getProductId());
-            if (p == null) throw BizException.notFound("商品不存在或已下架");
-            if (!"ACTIVE".equals(p.getStatus())) {
-                throw BizException.bad("商品「" + p.getName() + "」已下架，请从购物车移除后重新下单");
-            }
-            if (p.getStock() < it.getQty()) {
-                throw BizException.bad("商品「" + p.getName() + "」库存不足，仅剩 "
-                        + Math.max(p.getStock(), 0) + " 件");
+            Product p = it.getProduct();
+            if (p == null || p.getStock() < it.getQty()) {
+                throw BizException.bad("商品「" + (p == null ? it.getProductId() : p.getName()) + "」库存不足");
             }
         }
 
@@ -84,28 +77,33 @@ public class OrderService {
         order.setTotalFen(totalFen);
         order.setUserId(userId);
         order.setAddressJson(addressJson);
+        order = orderRepo.save(order);
+
+        // 订单明细（必须显式写 order_id：order 关系为 insertable=false 只读映射）
         List<OrderItem> oiList = new ArrayList<>();
         for (CartItem it : items) {
             OrderItem oi = new OrderItem();
+            oi.setOrderId(order.getId());
             oi.setProductId(it.getProductId());
             oi.setNameSnap(it.getProduct().getName());
             List<String> imgs = JsonUtil.parseStringList(it.getProduct().getImages());
-            oi.setImageSnap(imgs.isEmpty() ? "/images/products/p01.svg" : imgs.get(0));
+            oi.setImageSnap(imgs.isEmpty() ? "/images/products/p01.jpg" : imgs.get(0));
             oi.setPriceFen(it.getProduct().getPriceFen());
             oi.setQty(it.getQty());
-            oi.setOrderId(null); // 会在保存时由关系处理
+            oi.setOrder(order);
             oiList.add(oi);
         }
         order.setItems(oiList);
-        for (OrderItem oi : oiList) oi.setOrder(order);
-        order = orderRepo.save(order);
+        orderItemRepo.saveAll(oiList);
 
-        // 扣库存 + 增销量（使用已锁定的实体，避免并发覆盖）
+        // 扣库存 + 增销量（条件更新，防并发超卖；0 行=库存不足，抛异常回滚整单）
         for (CartItem it : items) {
-            Product p = lockedProducts.get(it.getProductId());
-            p.setStock(p.getStock() - it.getQty());
-            p.setSales(p.getSales() + it.getQty());
-            productRepo.save(p);
+            int updated = productRepo.deductStock(it.getProductId(), it.getQty());
+            if (updated == 0) {
+                Product p = productRepo.findById(it.getProductId()).orElse(null);
+                throw BizException.conflict("商品「"
+                        + (p != null ? p.getName() : it.getProductId()) + "」库存不足，请调整数量");
+            }
         }
         // 清购物车
         cartRepo.deleteByUserId(userId);
@@ -151,11 +149,48 @@ public class OrderService {
         return method;
     }
 
+    /** 客户取消订单（仅待付款；复用状态机与库存回补） */
+    @Transactional
+    public void cancelOrder(String id, SafeUser user) {
+        Order order = assertOwnedOrder(id, user);
+        if (!"PENDING_PAYMENT".equals(order.getStatus())) {
+            throw BizException.bad("当前订单状态不可取消");
+        }
+        adminService.updateOrderStatus(id, "CANCELLED");
+    }
+
+    /** 客户提交撤销申请（仅已付款；商家审核通过后退款取消） */
+    @Transactional
+    public void requestCancel(String id, SafeUser user) {
+        Order order = assertOwnedOrder(id, user);
+        if (!"PAID".equals(order.getStatus())) {
+            throw BizException.bad("当前订单状态不可申请取消");
+        }
+        if (Boolean.TRUE.equals(order.getCancelRequested())) {
+            throw BizException.bad("撤销申请已提交，请等待商家处理");
+        }
+        order.setCancelRequested(true);
+        order.setCancelRequestedAt(new Date());
+        orderRepo.save(order);
+    }
+
+    /** 校验订单归属（非本人订单一律 404，防 id 枚举） */
+    private Order assertOwnedOrder(String id, SafeUser user) {
+        Order order = orderRepo.findById(id)
+                .orElseThrow(() -> BizException.notFound("订单不存在"));
+        if (user == null || !order.getUserId().equals(user.id())) {
+            throw BizException.notFound("订单不存在");
+        }
+        return order;
+    }
+
     private Map<String, Object> toSummary(Order o) {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("id", o.getId());
         m.put("orderNo", o.getOrderNo());
         m.put("status", o.getStatus());
+        m.put("cancelRequested", Boolean.TRUE.equals(o.getCancelRequested()));
+        m.put("cancelRequestedAt", o.getCancelRequestedAt());
         m.put("totalFen", o.getTotalFen());
         m.put("createdAt", o.getCreatedAt());
         m.put("paidAt", o.getPaidAt());

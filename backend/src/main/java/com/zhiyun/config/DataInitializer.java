@@ -152,8 +152,8 @@ public class DataInitializer implements CommandLineRunner {
         o1.setPaidAt(d1);
         o1.setPayMethod("WECHAT");
         o1 = orderRepo.save(o1);
-        addOrderItem(o1, prods.get("cloud-goose-down-duvet"), "/images/products/p01.svg", 1);
-        addOrderItem(o1, prods.get("zero-pressure-pillow"), "/images/products/p04.svg", 1);
+        addOrderItem(o1, prods.get("cloud-goose-down-duvet"), "/images/products/p01.jpg", 1);
+        addOrderItem(o1, prods.get("zero-pressure-pillow"), "/images/products/p04.jpg", 1);
 
         Order o2 = new Order();
         o2.setOrderNo("ZY20260906-410927");
@@ -162,7 +162,7 @@ public class DataInitializer implements CommandLineRunner {
         o2.setUserId(users.get("demo@zhiyun.cn").getId());
         o2.setAddressJson(addrJsonStr);
         o2 = orderRepo.save(o2);
-        addOrderItem(o2, prods.get("mu-jin-60s-set"), "/images/products/p05.svg", 1);
+        addOrderItem(o2, prods.get("mu-jin-60s-set"), "/images/products/p05.jpg", 1);
 
         // 商机线索
         for (Object[] l : new Object[][]{
@@ -201,7 +201,7 @@ public class DataInitializer implements CommandLineRunner {
                 "甄选北纬45°黄金绒带95%白鹅绒，蓬松度800+，如云朵般轻盈包裹。100支全棉防绒面料，静音柔滑，锁温透气兼得。",
                 "一朵云的重量，约等于一夜安眠。织云走遍东北与西伯利亚绒源地，只为找到那束绒朵饱满、干净无杂的白鹅绒——以28年羽绒工艺，织就这张值得托付终身的被。",
                 299900, 368000,
-                M.writeValueAsString(List.of("/images/products/p01.svg", "/images/scenes/scene-2.svg", "/images/products/p06.svg")),
+                M.writeValueAsString(List.of("/images/products/p01.jpg", "/images/scenes/scene-2.jpg", "/images/products/p06.jpg")),
                 "填充：95%白鹅绒；面料：100支全棉防绒布",
                 M.writeValueAsString(List.of(
                         Map.of("label", "填充物", "value", "95% 白鹅绒（蓬松度 800+）"),
@@ -214,7 +214,7 @@ public class DataInitializer implements CommandLineRunner {
                 "选用江浙优质蚕区100%桑蚕丝长丝，绵韧贴身、轻盈透气。传统手工定位工艺，丝胎经年不移位，四季皆宜。",
                 "一颗茧，可抽丝千米。织云只取一级桑蚕丝长丝，沿袭江南蚕坊手工拉制定位古法——让千年的温柔，落在你枕畔。",
                 388000, null,
-                M.writeValueAsString(List.of("/images/products/p02.svg", "/images/scenes/scene-1.svg")),
+                M.writeValueAsString(List.of("/images/products/p02.jpg", "/images/scenes/scene-1.jpg")),
                 "填充：100% 桑蚕丝长丝；面料：60支天丝棉",
                 M.writeValueAsString(List.of(
                         Map.of("label", "填充物", "value", "100% 桑蚕丝长丝"),
@@ -227,7 +227,7 @@ public class DataInitializer implements CommandLineRunner {
                 "三区立体承托设计，仰睡侧睡各得其所；内芯融合托玛琳矿物颗粒，温感自热，促进颈部微循环，抗菌防螨率99%。",
                 "好枕头，是颈椎的年假。织云联合睡眠实验室，历经217次人体工学测试——只为让你入睡的第一分钟，就开始深睡。",
                 49900, 59900,
-                M.writeValueAsString(List.of("/images/products/p03.svg", "/images/products/p04.svg")),
+                M.writeValueAsString(List.of("/images/products/p03.jpg", "/images/products/p04.jpg")),
                 "内芯：托玛琳复合颗粒 + 高弹纤维；面料：60支抗菌针织棉",
                 M.writeValueAsString(List.of(
                         Map.of("label", "结构", "value", "三区承托（侧睡/仰睡/颈椎承托）"),
@@ -240,7 +240,7 @@ public class DataInitializer implements CommandLineRunner {
                 "5秒慢回弹记忆棉，随头颈曲线温柔包裹，压力分散零死角。外层天珠棉面料，亲肤可机洗。",
                 "把头交给一朵云。零压，不是没有支撑，而是每一寸都被恰好接住。",
                 39900, null,
-                M.writeValueAsString(List.of("/images/products/p04.svg", "/images/scenes/scene-3.svg")),
+                M.writeValueAsString(List.of("/images/products/p04.jpg", "/images/scenes/scene-3.jpg")),
                 "内芯：高密度慢回弹记忆棉；面料：天珠棉",
                 M.writeValueAsString(List.of(
                         Map.of("label", "内芯", "value", "高密度慢回弹记忆棉"),
@@ -253,7 +253,7 @@ public class DataInitializer implements CommandLineRunner {
                 "60支新疆长绒棉，缎纹织造，触感如丝。暮金色调取自黄昏最后一缕光，活性印染，久洗如新。",
                 "暮色四合时，最想回到的地方。以日落时分的天光为灵感，把一天的疲惫，温柔收进这一床暮金里。",
                 129900, 159900,
-                M.writeValueAsString(List.of("/images/products/p05.svg", "/images/scenes/scene-1.svg", "/images/scenes/scene-4.svg")),
+                M.writeValueAsString(List.of("/images/products/p05.jpg", "/images/scenes/scene-1.jpg", "/images/scenes/scene-4.jpg")),
                 "面料：60支新疆长绒棉缎纹",
                 M.writeValueAsString(List.of(
                         Map.of("label", "面料", "value", "60支新疆长绒棉 · 贡缎缎纹"),
@@ -266,7 +266,7 @@ public class DataInitializer implements CommandLineRunner {
                 "100支贡缎素织，经纬密度冠绝同业，光如月色流转。无印染添加，本色即高级。",
                 "月白，是中国人最含蓄的奢华。不着一色，自有万色——织得进月光，也睡得下星河。",
                 189900, null,
-                M.writeValueAsString(List.of("/images/products/p06.svg", "/images/scenes/scene-2.svg")),
+                M.writeValueAsString(List.of("/images/products/p06.jpg", "/images/scenes/scene-2.jpg")),
                 "面料：100支精梳棉贡缎",
                 M.writeValueAsString(List.of(
                         Map.of("label", "面料", "value", "100支精梳长绒棉贡缎"),
@@ -279,7 +279,7 @@ public class DataInitializer implements CommandLineRunner {
                 "奥地利兰精天丝纤维，Q-max凉感系数0.36，触肤瞬凉2-3℃。轻盈如岚，吸湿透气，空调房与闷热夜的两全法。",
                 "夏夜的凉，应当像山间青岚——拂面而不浸骨。以森林之势取材，归还森林以敬意。",
                 89900, 109900,
-                M.writeValueAsString(List.of("/images/products/p07.svg", "/images/scenes/scene-5.svg")),
+                M.writeValueAsString(List.of("/images/products/p07.jpg", "/images/scenes/scene-5.jpg")),
                 "面料：100% 兰精天丝；填充：凉感纤维",
                 M.writeValueAsString(List.of(
                         Map.of("label", "凉感值", "value", "Q-max ≥ 0.36（A类优等）"),
@@ -292,7 +292,7 @@ public class DataInitializer implements CommandLineRunner {
                 "国家A类母婴安全标准，物理防螨无化学添加。分龄高度设计，守护3-12岁每一个成长期的颈椎。",
                 "孩子的睡眠里，藏着长高的秘密。像守护第一颗乳牙一样，守护他的第一只枕头。",
                 29900, null,
-                M.writeValueAsString(List.of("/images/products/p08.svg", "/images/scenes/scene-3.svg")),
+                M.writeValueAsString(List.of("/images/products/p08.jpg", "/images/scenes/scene-3.jpg")),
                 "内芯：抗菌中空纤维；面料：A类精梳棉",
                 M.writeValueAsString(List.of(
                         Map.of("label", "标准", "value", "GB 18401 A类母婴级"),
@@ -305,7 +305,7 @@ public class DataInitializer implements CommandLineRunner {
                 "取意「锦瑟无端五十弦」，十件套涵盖鹅绒被、贡缎套件、蚕丝枕与新婚对枕。苏绣缠枝莲纹，一针一线皆是祝福。",
                 "琴瑟在御，莫不静好。织云婚嫁系列与苏州绣娘合作，把「白头偕老」四个字，绣进了往后每一个晨昏。",
                 599900, 699900,
-                M.writeValueAsString(List.of("/images/products/p09.svg", "/images/scenes/scene-4.svg", "/images/products/p02.svg")),
+                M.writeValueAsString(List.of("/images/products/p09.jpg", "/images/scenes/scene-4.jpg", "/images/products/p02.jpg")),
                 "组合：鹅绒被+贡缎四件套+蚕丝对枕等十件",
                 M.writeValueAsString(List.of(
                         Map.of("label", "套内", "value", "十件套（详见商品参数页）"),
@@ -318,7 +318,7 @@ public class DataInitializer implements CommandLineRunner {
                 "与前GUCCI印花设计总监联名，以莫奈《睡莲》为底本，数码直喷十六色渐变印花，把吉维尼花园搬进卧室。",
                 "当莫奈的睡莲在枕畔泛起柔光，梦也有了颜色。艺术不必悬挂于墙——它可以被盖在身上。",
                 219900, null,
-                M.writeValueAsString(List.of("/images/products/p10.svg", "/images/scenes/scene-5.svg")),
+                M.writeValueAsString(List.of("/images/products/p10.jpg", "/images/scenes/scene-5.jpg")),
                 "面料：80支长绒棉数码印花",
                 M.writeValueAsString(List.of(
                         Map.of("label", "联名", "value", "前GUCCI印花设计总监工作室"),
@@ -331,7 +331,7 @@ public class DataInitializer implements CommandLineRunner {
                 "欧洲雨露麻，天然褶皱纹理与哑光质感，越洗越柔软。中性大地色系，任意床品皆可相融。",
                 "亚麻是布料里的原野风。它不讨好肌肤，却让肌肤记得自由。",
                 39900, null,
-                M.writeValueAsString(List.of("/images/products/p11.svg", "/images/scenes/scene-1.svg")),
+                M.writeValueAsString(List.of("/images/products/p11.jpg", "/images/scenes/scene-1.jpg")),
                 "面料：100% 欧洲雨露麻",
                 M.writeValueAsString(List.of(
                         Map.of("label", "面料", "value", "100% 欧洲雨露麻（4.2支）"),
@@ -344,7 +344,7 @@ public class DataInitializer implements CommandLineRunner {
                 "澳洲美利奴细支羊毛，天然卷曲锁住静止空气，恒温锁暖不闷汗。羊毛脂亲肤，湿气管理能力是棉的2倍。",
                 "山有暖意，被有羊毛。最古老的御寒智慧，配得上最现代的一夜好眠。",
                 249900, 289900,
-                M.writeValueAsString(List.of("/images/products/p12.svg", "/images/scenes/scene-6.svg")),
+                M.writeValueAsString(List.of("/images/products/p12.jpg", "/images/scenes/scene-6.jpg")),
                 "填充：100% 澳洲美利奴羊毛；面料：全棉防羽布",
                 M.writeValueAsString(List.of(
                         Map.of("label", "填充物", "value", "100% 澳洲美利奴羊毛"),

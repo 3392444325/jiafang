@@ -22,6 +22,13 @@ export function formatDate(d) {
   })
 }
 
+/** 后端 Date 统一转为本地时区 YYYY-MM-DD（兼容 ISO 字符串与毫秒时间戳） */
+export function ymd(v) {
+  if (!v) return ''
+  const d = v instanceof Date ? v : new Date(v)
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('sv-SE')
+}
+
 export function formatDateTime(d) {
   const date = typeof d === 'string' ? new Date(d) : d
   return date.toLocaleString('zh-CN', {

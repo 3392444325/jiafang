@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "我的订单",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f5f2ec",
+  "usingComponents": {
+    "price": "/components/price/index"
+  }
+}

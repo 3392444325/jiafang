@@ -1,0 +1,1 @@
+import{_ as e}from"./AuthForm-D3ONXhsL.js";import{b as s,c as t,e as a,h as o}from"./index-DisGlVb6.js";const c={class:"wrap flex min-h-[72vh] items-center justify-center py-20"},r={class:"w-full max-w-md"},d={__name:"LoginView",setup(n){return(_,i)=>(s(),t("div",c,[a("div",r,[o(e,{mode:"login"})])]))}};export{d as default};

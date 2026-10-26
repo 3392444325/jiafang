@@ -1,0 +1,143 @@
+.page {
+  padding-bottom: 40rpx;
+}
+.loading-tip {
+  text-align: center;
+  color: var(--muted);
+  padding: 120rpx 0;
+}
+
+/* 状态 chips */
+.chips {
+  white-space: nowrap;
+  padding: 20rpx 24rpx 4rpx;
+}
+.chip {
+  display: inline-block;
+  padding: 10rpx 28rpx;
+  margin-right: 16rpx;
+  border-radius: 999rpx;
+  background: #fff;
+  border: 1rpx solid var(--line);
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+.chip-on {
+  background: var(--ink);
+  color: var(--ivory);
+  border-color: var(--ink);
+}
+
+/* 订单卡片 */
+.orders {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 20rpx 24rpx;
+}
+.order-card {
+  padding: 24rpx;
+}
+.oc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+.oc-no {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+.oc-status {
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.st-PENDING_PAYMENT {
+  color: var(--gold-deep);
+}
+.st-PAID {
+  color: #1d7a53;
+}
+.st-SHIPPED {
+  color: #3a6ea5;
+}
+.st-COMPLETED {
+  color: var(--muted);
+}
+.st-CANCELLED {
+  color: #b04a42;
+}
+
+/* 商品行 */
+.oc-goods {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx 0;
+}
+.oc-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  background: var(--sand);
+  flex-shrink: 0;
+}
+.oc-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clay);
+  font-size: 26rpx;
+  letter-spacing: 4rpx;
+}
+.oc-g-info {
+  flex: 1;
+  min-width: 0;
+}
+.oc-g-name {
+  font-size: 26rpx;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.oc-g-qty {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+/* 底部 */
+.oc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--line);
+}
+.oc-date {
+  font-size: 22rpx;
+  color: var(--muted);
+}
+.oc-total {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+.oc-total-label {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+
+/* 空态按钮 */
+.empty-btn {
+  display: inline-block;
+  margin-top: 32rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 64rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+}

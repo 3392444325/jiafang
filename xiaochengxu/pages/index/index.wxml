@@ -1,0 +1,72 @@
+<view class="page">
+  <!-- 搜索入口（吸顶） -->
+  <view class="search-bar">
+    <view class="search-inner" bindtap="goSearch" hover-class="none">
+      <text class="search-txt">搜索商品 · 鹅绒被 / 天丝 / 礼盒</text>
+    </view>
+  </view>
+
+  <!-- Banner 轮播 -->
+  <swiper
+    wx:if="{{banners.length}}"
+    class="banner"
+    indicator-dots
+    indicator-color="rgba(255,255,255,0.4)"
+    indicator-active-color="#b39b6b"
+    autoplay
+    circular
+    interval="4500"
+  >
+    <swiper-item wx:for="{{banners}}" wx:key="index">
+      <view class="banner-item">
+        <image class="banner-img" src="{{item.img}}" mode="aspectFill" />
+        <view class="banner-mask"></view>
+        <text wx:if="{{item.title}}" class="banner-title">{{item.title}}</text>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 分类横滑 -->
+  <view class="sec">
+    <view class="sec-head">
+      <text class="eyebrow">Collections</text>
+      <text class="sec-title">系列甄选</text>
+    </view>
+    <scroll-view class="cat-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view
+        class="cat-item"
+        wx:for="{{categories}}"
+        wx:key="slug"
+        hover-class="cat-hover"
+        data-slug="{{item.slug}}"
+        bindtap="goCategory"
+      >
+        <view class="cat-img-wrap">
+          <image class="cat-img" src="{{item.img}}" mode="aspectFill" />
+        </view>
+        <text class="cat-name">{{item.name}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 新品甄选 -->
+  <view class="sec">
+    <view class="sec-head">
+      <text class="eyebrow">New Arrival</text>
+      <view class="sec-head-row">
+        <text class="sec-title">新品甄选</text>
+        <text class="sec-more" bindtap="goShop">全部 ›</text>
+      </view>
+    </view>
+    <view class="grid">
+      <view class="grid-item" wx:for="{{products}}" wx:key="slug">
+        <product-card product="{{item}}" />
+      </view>
+    </view>
+    <view wx:if="{{!loading && !products.length}}" class="empty">商品即将上架，敬请期待</view>
+  </view>
+
+  <view class="brand-foot">
+    <text class="brand-foot-cn">以东方织造 · 致一世安眠</text>
+  </view>
+</view>

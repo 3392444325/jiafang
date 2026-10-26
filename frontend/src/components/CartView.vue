@@ -31,10 +31,10 @@ async function remove(id) {
 
 <template>
   <div v-if="cart.items.length === 0" class="py-24 text-center">
-    <p class="font-display text-2xl tracking-[0.2em] text-ink/60">
+    <p class="font-display text-2xl tracking-[0.2em] text-ink/75">
       你的购物车还空着
     </p>
-    <p class="mt-4 text-sm tracking-[0.2em] text-ink/40">
+    <p class="mt-4 text-[15px] tracking-[0.2em] text-ink/75">
       去挑选一床好梦吧。
     </p>
     <router-link to="/products" class="btn-primary mt-10">
@@ -66,7 +66,7 @@ async function remove(id) {
           >
             {{ it.name }}
           </router-link>
-          <p class="mt-1.5 text-xs tracking-[0.15em] text-ink/45">
+          <p class="mt-1.5 text-[14px] tracking-[0.15em] text-ink/75">
             {{ yuan(it.priceFen) }} / 件
           </p>
         </div>
@@ -74,16 +74,16 @@ async function remove(id) {
           <button
             @click="setQty(it.id, it.qty - 1)"
             :disabled="it.qty <= 1"
-            class="cursor-pointer px-3.5 py-2 text-ink/60 transition-colors hover:text-gold-deep disabled:opacity-30"
+            class="cursor-pointer px-3.5 py-2 text-ink/75 transition-colors hover:text-gold-deep disabled:opacity-30"
             aria-label="减少数量"
           >
             −
           </button>
-          <span class="min-w-10 text-center text-sm">{{ it.qty }}</span>
+          <span class="min-w-10 text-center text-[15px]">{{ it.qty }}</span>
           <button
             @click="setQty(it.id, Math.min(it.stock, it.qty + 1))"
             :disabled="it.qty >= it.stock"
-            class="cursor-pointer px-3.5 py-2 text-ink/60 transition-colors hover:text-gold-deep disabled:opacity-30"
+            class="cursor-pointer px-3.5 py-2 text-ink/75 transition-colors hover:text-gold-deep disabled:opacity-30"
             aria-label="增加数量"
           >
             +
@@ -95,7 +95,7 @@ async function remove(id) {
         <button
           @click="remove(it.id)"
           aria-label="移除"
-          class="cursor-pointer px-1 text-ink/30 transition-colors hover:text-red-700"
+          class="cursor-pointer px-1 text-ink/70 transition-colors hover:text-red-700"
         >
           ✕
         </button>
@@ -104,10 +104,10 @@ async function remove(id) {
 
     <div class="flex flex-col items-end gap-6 pt-10">
       <div class="text-right">
-        <p class="text-xs tracking-[0.25em] text-ink/45">
+        <p class="text-[14px] tracking-[0.25em] text-ink/75">
           共 {{ cart.items.length }} 件商品 · 运费：顺丰包邮
         </p>
-        <p class="mt-3 text-sm tracking-[0.2em] text-ink/60">合计</p>
+        <p class="mt-3 text-[15px] tracking-[0.2em] text-ink/75">合计</p>
         <p class="font-display text-4xl text-gold-deep">{{ yuan(cart.totalFen) }}</p>
       </div>
       <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -118,8 +118,8 @@ async function remove(id) {
           去结算
         </router-link>
       </div>
-      <p class="text-[11px] tracking-[0.15em] text-ink/35">
-        结算前请先登录织云账户 · 游客购物车将在登录后自动合并
+      <p class="text-[14px] tracking-[0.15em] text-ink/75">
+        结算前请先登录ST.KELLY账户 · 游客购物车将在登录后自动合并
       </p>
     </div>
   </div>

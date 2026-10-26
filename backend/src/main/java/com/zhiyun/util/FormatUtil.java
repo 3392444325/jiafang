@@ -1,47 +1,45 @@
 package com.zhiyun.util;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** 移植自 lib/format.ts — 金额、日期、订单号、姓名脱敏、状态映射 */
 public final class FormatUtil {
 
     private FormatUtil() {}
 
-    private static final DecimalFormat YUAN_FMT = new DecimalFormat("#,###");
-    private static final DecimalFormat FEN_NUM_FMT = new DecimalFormat("#,##0.00");
-
-    /** 分 → ¥1,299 */
-    public static String yuan(long fen) {
-        return "¥" + YUAN_FMT.format(fen / 100.0);
-    }
-
-    /** 分 → 1,299.00 */
-    public static String fenToNum(long fen) {
-        return FEN_NUM_FMT.format(fen / 100.0);
-    }
-
-    private static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy年M月d日");
-    private static final SimpleDateFormat DATETIME_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    // DateTimeFormatter 线程安全，可静态共享
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy年M月d日");
+    private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter ORDER_NO_FMT = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    private static final ZoneId ZONE = ZoneId.systemDefault();
 
     public static String formatDate(Date d) {
-        return d == null ? "" : DATE_FMT.format(d);
+        return d == null ? "" : DATE_FMT.format(d.toInstant().atZone(ZONE));
     }
 
     public static String formatDateTime(Date d) {
-        return d == null ? "" : DATETIME_FMT.format(d);
+        return d == null ? "" : DATETIME_FMT.format(d.toInstant().atZone(ZONE));
     }
 
-    /** 订单号：ZY20260908-123456 */
+    private static final AtomicInteger SEQ = new AtomicInteger(0);
+
+    /**
+     * 订单号：ZY20260909142530123-4567
+     * 时间戳精确到毫秒 + 进程内自增序列 + 随机后缀，极大降低 unique 冲突概率
+     */
     public static String genOrderNo() {
         Date now = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        int rand = ThreadLocalRandom.current().nextInt(100000, 1000000);
-        return "ZY" + sdf.format(now) + "-" + rand;
+        int seq = SEQ.incrementAndGet() % 1000;
+        int rand = ThreadLocalRandom.current().nextInt(1000, 10000);
+        return "ZY" + ORDER_NO_FMT.format(now.toInstant().atZone(ZONE))
+                + String.format("-%03d-%04d", seq, rand);
     }
 
     /** 姓名脱敏：张三 → 张**， Leon → L*** */

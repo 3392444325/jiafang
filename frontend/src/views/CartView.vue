@@ -20,7 +20,7 @@ onMounted(() => {
         购物车
         <span
           v-if="auth.isLoggedIn"
-          class="ml-4 align-middle text-xs tracking-[0.2em] text-ink/40"
+          class="ml-4 align-middle text-[14px] tracking-[0.2em] text-ink/75"
         >
           {{ auth.displayName }}，欢迎回来
         </span>

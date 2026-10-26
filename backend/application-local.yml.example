@@ -1,0 +1,28 @@
+# ============================================================
+# 织云 ZHIYUN — 本地/服务器私有配置模板
+# ============================================================
+# 用法：把本文件复制为 application-local.yml 放在 backend 目录下
+# （即与 start.bat 同级的 backend\ 文件夹里），填入真实值即可生效。
+#
+#   copy backend\application-local.yml.example backend\application-local.yml
+#
+# ⚠️ application-local.yml 已被 .gitignore 排除，绝不提交到仓库。
+# ⚠️ 甲方服务器部署时同样用这个文件保存生产数据库的账号密码，
+#    服务器代码更新时该文件不会被覆盖。
+# ============================================================
+
+spring:
+  datasource:
+    # 数据库主机与端口（甲方服务器上通常是 localhost 或内网 IP）
+    # 留空则使用 application.yml 中的默认值 localhost:3306/zhiyun
+    # 若在此覆盖整条 url，请保留 createDatabaseIfNotExist=true 以便首次启动自动建库
+    # url: jdbc:mysql://localhost:3306/zhiyun?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&characterEncoding=utf8&useUnicode=true
+
+    username: root
+    # 真实数据库密码写在这里（本文件不入 git）
+    password: "在这里填入真实密码"
+
+zy:
+  cookie:
+    # 甲方服务器若通过 HTTPS 对外提供服务，改为 true
+    secure: false

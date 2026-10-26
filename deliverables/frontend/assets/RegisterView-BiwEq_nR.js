@@ -1,0 +1,1 @@
+import{_ as e}from"./AuthForm-D3ONXhsL.js";import{b as s,c as t,e as a,h as r}from"./index-DisGlVb6.js";const c={class:"wrap flex min-h-[72vh] items-center justify-center py-20"},o={class:"w-full max-w-md"},l={__name:"RegisterView",setup(_){return(i,m)=>(s(),t("div",c,[a("div",o,[r(e,{mode:"register"})])]))}};export{l as default};

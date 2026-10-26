@@ -31,10 +31,10 @@ document.title = '客户管理'
   <AdminLayout>
     <div>
       <div class="flex items-center justify-between border border-ink/10 bg-ivory px-6 py-4">
-        <p class="text-xs tracking-[0.25em] text-ink/50">
+        <p class="text-[14px] tracking-[0.25em] text-ink/80">
           注册客户（{{ rows.length }}）
         </p>
-        <p class="text-xs tracking-[0.2em] text-ink/50">
+        <p class="text-[14px] tracking-[0.2em] text-ink/80">
           累计贡献销售额
           <span class="font-display text-base text-gold-deep">
             {{ yuan(totalSpent) }}
@@ -43,7 +43,7 @@ document.title = '客户管理'
       </div>
 
       <div class="mt-5 border border-ink/10 bg-ivory">
-        <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr] gap-4 border-b border-ink/10 px-6 py-3.5 text-[10px] uppercase tracking-[0.2em] text-ink/40">
+        <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr] gap-4 border-b border-ink/10 px-6 py-3.5 text-[13px] uppercase tracking-[0.2em] text-ink/75">
           <span>客户</span>
           <span>注册时间</span>
           <span class="text-right">订单</span>
@@ -54,29 +54,29 @@ document.title = '客户管理'
           <div
             v-for="c in rows"
             :key="c.id"
-            class="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr] items-center gap-4 px-6 py-4 text-sm"
+            class="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr] items-center gap-4 px-6 py-4 text-[15px]"
           >
             <span class="min-w-0">
               <span class="block truncate tracking-[0.1em] text-ink">
                 {{ c.name ?? '（未命名）' }}
                 <span
                   v-if="c.role === 'ADMIN'"
-                  class="ml-2 border border-sky-700/30 bg-sky-700/10 px-1.5 py-0.5 text-[9px] tracking-[0.15em] text-sky-800"
+                  class="ml-2 border border-sky-700/30 bg-sky-700/10 px-1.5 py-0.5 text-[13px] tracking-[0.15em] text-sky-800"
                 >
                   管理员
                 </span>
               </span>
-              <span class="mt-0.5 block truncate text-[11px] text-ink/40">
+              <span class="mt-0.5 block truncate text-[14px] text-ink/75">
                 {{ c.email }}
               </span>
             </span>
-            <span class="text-xs text-ink/45">
+            <span class="text-[14px] text-ink/75">
               {{ formatDateTime(c.createdAt) }}
             </span>
-            <span class="text-right text-xs text-ink/60">
+            <span class="text-right text-[14px] text-ink/75">
               {{ c.orderCount }} 单<span v-if="c.paidCount < c.orderCount">（付 {{ c.paidCount }}）</span>
             </span>
-            <span class="text-right text-xs text-ink/45">
+            <span class="text-right text-[14px] text-ink/75">
               {{ c.lastOrderAt ? formatDateTime(c.lastOrderAt) : '—' }}
             </span>
             <span class="text-right font-display text-gold-deep">

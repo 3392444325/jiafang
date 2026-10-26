@@ -44,7 +44,7 @@ watch(() => route.params.slug, load)
   <div class="pt-[72px]">
     <template v-if="loaded && detail && !notFound">
       <!-- 面包屑 -->
-      <div class="wrap flex items-center gap-2 py-6 text-[11px] tracking-[0.2em] text-ink/40">
+      <div class="wrap flex flex-wrap items-center gap-x-2 gap-y-1 py-6 text-[14px] tracking-[0.2em] text-ink/75">
         <router-link to="/" class="transition-colors hover:text-ink">
           品牌首页
         </router-link>
@@ -60,7 +60,7 @@ watch(() => route.params.slug, load)
           {{ detail.category.name }}
         </router-link>
         <span>/</span>
-        <span class="text-ink/70">{{ detail.name }}</span>
+        <span class="text-ink/80">{{ detail.name }}</span>
       </div>
 
       <!-- 商品主区 -->
@@ -74,7 +74,7 @@ watch(() => route.params.slug, load)
           <h1 class="mt-4 font-display text-3xl leading-snug tracking-[0.08em] text-ink md:text-4xl">
             {{ detail.name }}
           </h1>
-          <p v-if="detail.subtitle" class="mt-3 text-sm tracking-[0.18em] text-ink/50">
+          <p v-if="detail.subtitle" class="mt-3 text-[15px] tracking-[0.18em] text-ink/80">
             {{ detail.subtitle }}
           </p>
 
@@ -82,20 +82,20 @@ watch(() => route.params.slug, load)
             <span class="font-display text-3xl text-gold-deep">
               {{ yuan(detail.priceFen) }}
             </span>
-            <span v-if="detail.compareAtFen" class="text-sm text-ink/30 line-through">
+            <span v-if="detail.compareAtFen" class="text-[15px] text-ink/70 line-through">
               {{ yuan(detail.compareAtFen) }}
             </span>
-            <span v-if="detail.compareAtFen" class="bg-ink/85 px-2.5 py-1 text-[10px] tracking-[0.2em] text-ivory">
+            <span v-if="detail.compareAtFen" class="bg-ink/85 px-2.5 py-1 text-[13px] tracking-[0.2em] text-ivory">
               限时礼遇
             </span>
           </div>
 
           <div class="my-8 h-px bg-ink/10" />
 
-          <p class="text-[15px] leading-loose text-ink/75">
+          <p class="text-[15px] leading-loose text-ink/85">
             {{ detail.description }}
           </p>
-          <p v-if="detail.story" class="mt-5 border-l-2 border-gold/50 pl-5 text-sm leading-loose text-ink/55">
+          <p v-if="detail.story" class="mt-5 border-l-2 border-gold/50 pl-5 text-[15px] leading-loose text-ink/80">
             {{ detail.story }}
           </p>
 
@@ -104,7 +104,7 @@ watch(() => route.params.slug, load)
           </div>
 
           <!-- 服务保障 -->
-          <ul class="mt-10 space-y-3 border border-ink/10 bg-ivory p-6 text-[12px] tracking-[0.12em] text-ink/60">
+          <ul class="mt-10 space-y-3 border border-ink/10 bg-ivory p-6 text-[14px] tracking-[0.12em] text-ink/75">
             <li class="flex items-center gap-3">
               <span class="text-gold-deep">◆</span> 顺丰包邮 · 48 小时内发出
             </li>
@@ -125,23 +125,23 @@ watch(() => route.params.slug, load)
             <p class="eyebrow">Specifications</p>
             <h2 class="mt-4 font-display text-2xl tracking-[0.15em]">规格参数</h2>
             <dl class="mt-8">
-              <div v-if="detail.material" class="flex gap-6 border-t border-ink/10 py-4 text-sm">
-                <dt class="w-20 shrink-0 tracking-[0.2em] text-ink/45">材质</dt>
-                <dd class="leading-relaxed text-ink/75">{{ detail.material }}</dd>
+              <div v-if="detail.material" class="flex gap-6 border-t border-ink/10 py-4 text-[15px]">
+                <dt class="w-20 shrink-0 tracking-[0.2em] text-ink/75">材质</dt>
+                <dd class="leading-relaxed text-ink/85">{{ detail.material }}</dd>
               </div>
               <div
                 v-for="s in detail.specs"
                 :key="s.label"
-                class="flex gap-6 border-t border-ink/10 py-4 text-sm"
+                class="flex gap-6 border-t border-ink/10 py-4 text-[15px]"
               >
-                <dt class="w-20 shrink-0 tracking-[0.2em] text-ink/45">
+                <dt class="w-20 shrink-0 tracking-[0.2em] text-ink/75">
                   {{ s.label }}
                 </dt>
-                <dd class="leading-relaxed text-ink/75">{{ s.value }}</dd>
+                <dd class="leading-relaxed text-ink/85">{{ s.value }}</dd>
               </div>
-              <div class="flex gap-6 border-y border-ink/10 py-4 text-sm">
-                <dt class="w-20 shrink-0 tracking-[0.2em] text-ink/45">销量</dt>
-                <dd class="text-ink/75">已售 {{ detail.sales.toLocaleString('zh-CN') }} 件</dd>
+              <div class="flex gap-6 border-y border-ink/10 py-4 text-[15px]">
+                <dt class="w-20 shrink-0 tracking-[0.2em] text-ink/75">销量</dt>
+                <dd class="text-ink/85">已售 {{ detail.sales.toLocaleString('zh-CN') }} 件</dd>
               </div>
             </dl>
           </Reveal>
@@ -158,30 +158,30 @@ watch(() => route.params.slug, load)
               </div>
               <p class="font-display text-3xl text-gold-deep">
                 {{ detail.avgRating.toFixed(1) }}
-                <span class="ml-1 text-sm text-ink/40">/ 5.0</span>
+                <span class="ml-1 text-[15px] text-ink/75">/ 5.0</span>
               </p>
             </div>
             <div class="mt-8 space-y-6">
-              <p v-if="detail.reviews.length === 0" class="py-8 text-sm tracking-[0.15em] text-ink/40">
+              <p v-if="detail.reviews.length === 0" class="py-8 text-[15px] tracking-[0.15em] text-ink/75">
                 暂无评价，成为第一位分享者。
               </p>
               <div v-for="r in detail.reviews" :key="r.id" class="border-b border-ink/10 pb-6">
-                <p class="text-sm tracking-[0.2em] text-gold">
-                  {{ '★'.repeat(r.rating) }}<span class="text-ink/20">{{ '☆'.repeat(5 - r.rating) }}</span>
+                <p class="text-[15px] tracking-[0.2em] text-gold">
+                  {{ '★'.repeat(r.rating) }}<span class="text-ink/70">{{ '☆'.repeat(5 - r.rating) }}</span>
                 </p>
-                <p class="mt-3 text-sm leading-loose text-ink/75">
+                <p class="mt-3 text-[15px] leading-loose text-ink/85">
                   「{{ r.content }}」
                 </p>
-                <p class="mt-3 text-[11px] tracking-[0.2em] text-ink/40">
+                <p class="mt-3 text-[14px] tracking-[0.2em] text-ink/75">
                   {{ maskName(r.userName) }} · {{ formatDate(r.createdAt) }}
                 </p>
               </div>
             </div>
             <ReviewForm v-if="detail.loggedIn && detail.canReview" :product-id="detail.id" @submitted="refetch" />
-            <p v-else-if="detail.loggedIn" class="mt-6 text-[11px] tracking-[0.15em] text-ink/40">
+            <p v-else-if="detail.loggedIn" class="mt-6 text-[14px] tracking-[0.15em] text-ink/75">
               购买过该商品后即可发表评价（每个商品限一次）。
             </p>
-            <p v-else class="mt-6 text-[11px] tracking-[0.15em] text-ink/40">
+            <p v-else class="mt-6 text-[14px] tracking-[0.15em] text-ink/75">
               登录并购买过该商品后即可发表评价。
             </p>
           </Reveal>
@@ -211,7 +211,7 @@ watch(() => route.params.slug, load)
 
     <!-- 未找到 -->
     <div v-else-if="loaded && notFound" class="wrap py-24 text-center">
-      <p class="font-display text-2xl tracking-[0.15em] text-ink/60">
+      <p class="font-display text-2xl tracking-[0.15em] text-ink/75">
         商品不存在或已下架
       </p>
       <router-link to="/products" class="btn-primary mt-10">

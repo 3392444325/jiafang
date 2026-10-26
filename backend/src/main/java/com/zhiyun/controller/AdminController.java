@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,10 +65,16 @@ public class AdminController {
         adminService.assertAdmin(requireAdmin());
         double price = toDouble(body.get("price"));
         boolean featured = Boolean.TRUE.equals(body.get("featured"));
+        List<String> images = toStringList(body.get("images"));
+        if (images == null || images.isEmpty()) {
+            String single = (String) body.get("image");
+            if (single != null && !single.isBlank()) images = List.of(single);
+        }
         String id = adminService.createProduct(
-                (String) body.get("name"), (String) body.get("categoryId"),
-                price, (String) body.get("description"),
-                (String) body.get("image"), featured);
+                (String) body.get("name"), (String) body.get("subtitle"),
+                (String) body.get("categoryId"), price,
+                body.get("stock") == null ? 999 : toInt(body.get("stock")),
+                (String) body.get("description"), images, featured);
         return Map.of("ok", true, "id", id);
     }
 
@@ -80,7 +87,8 @@ public class AdminController {
         adminService.updateProduct(
                 (String) body.get("id"), (String) body.get("name"),
                 (String) body.get("subtitle"), (String) body.get("description"),
-                (String) body.get("categoryId"), price, stock, featured);
+                (String) body.get("categoryId"), price, stock, featured,
+                toStringList(body.get("images")));
         return Ok.yes();
     }
 
@@ -105,6 +113,22 @@ public class AdminController {
     public Ok updateOrderStatus(@RequestBody Map<String, Object> body) {
         adminService.assertAdmin(requireAdmin());
         adminService.updateOrderStatus((String) body.get("id"), (String) body.get("status"));
+        return Ok.yes();
+    }
+
+    /** 商家同意客户撤销申请（退款取消） */
+    @PostMapping("/orders/cancel-approve")
+    public Ok approveCancel(@RequestBody Map<String, Object> body) {
+        adminService.assertAdmin(requireAdmin());
+        adminService.approveCancel((String) body.get("id"));
+        return Ok.yes();
+    }
+
+    /** 商家拒绝客户撤销申请 */
+    @PostMapping("/orders/cancel-reject")
+    public Ok rejectCancel(@RequestBody Map<String, Object> body) {
+        adminService.assertAdmin(requireAdmin());
+        adminService.rejectCancel((String) body.get("id"));
         return Ok.yes();
     }
 
@@ -161,16 +185,24 @@ public class AdminController {
     }
 
     private int toInt(Object v) {
-        if (v == null) throw BizException.bad("参数错误：数值不能为空");
+        if (v == null) throw BizException.bad("缺少必需参数");
         if (v instanceof Number n) return n.intValue();
-        try { return Integer.parseInt(v.toString().trim()); }
-        catch (Exception e) { throw BizException.bad("参数错误：" + v + " 不是有效整数"); }
+        try { return Integer.parseInt(v.toString()); } catch (Exception e) {
+            throw BizException.bad("参数格式错误: " + v);
+        }
+    }
+
+    /** images 字段：字符串列表；非列表或缺失返回 null（表示未提供） */
+    private List<String> toStringList(Object v) {
+        if (!(v instanceof List<?> list)) return null;
+        return list.stream().map(String::valueOf).filter(s -> !s.isBlank()).toList();
     }
 
     private double toDouble(Object v) {
-        if (v == null) throw BizException.bad("参数错误：数值不能为空");
+        if (v == null) throw BizException.bad("缺少必需参数");
         if (v instanceof Number n) return n.doubleValue();
-        try { return Double.parseDouble(v.toString().trim()); }
-        catch (Exception e) { throw BizException.bad("参数错误：" + v + " 不是有效数字"); }
+        try { return Double.parseDouble(v.toString()); } catch (Exception e) {
+            throw BizException.bad("参数格式错误: " + v);
+        }
     }
 }

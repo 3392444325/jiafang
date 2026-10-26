@@ -37,8 +37,8 @@ async function submit() {
     <p class="font-display text-2xl tracking-[0.2em] text-gold-deep">
       提交成功
     </p>
-    <p class="mt-4 text-sm leading-loose text-ink/60">
-      感谢你的信任，织云{{ tag }}顾问将在 1 个工作日内与你联系。
+    <p class="mt-4 text-[15px] leading-loose text-ink/75">
+      感谢你的信任，ST.KELLY{{ tag }}顾问将在 1 个工作日内与你联系。
     </p>
   </div>
 
@@ -47,7 +47,7 @@ async function submit() {
     <h3 class="mt-3 font-display text-2xl tracking-[0.15em] text-ink">
       {{ title }}
     </h3>
-    <p v-if="desc" class="mt-3 text-sm leading-loose text-ink/55">{{ desc }}</p>
+    <p v-if="desc" class="mt-3 text-[15px] leading-loose text-ink/80">{{ desc }}</p>
     <form @submit.prevent="submit" class="mt-7 space-y-4">
       <input
         v-model="form.name"
@@ -67,12 +67,12 @@ async function submit() {
         rows="3"
         placeholder="意向说明（城市 / 规模 / 预算，选填）"
       />
-      <p v-if="error" class="text-xs tracking-[0.15em] text-red-700">{{ error }}</p>
+      <p v-if="error" class="text-[14px] tracking-[0.15em] text-red-700">{{ error }}</p>
       <button type="submit" :disabled="busy" class="btn-primary w-full disabled:opacity-50">
         {{ busy ? '提交中…' : '提交意向' }}
       </button>
-      <p class="text-[11px] leading-relaxed tracking-[0.12em] text-ink/40">
-        提交即视为同意织云与你联系，招商顾问将在 1 个工作日内致电。
+      <p class="text-[14px] leading-relaxed tracking-[0.12em] text-ink/75">
+        提交即视为同意ST.KELLY与你联系，招商顾问将在 1 个工作日内致电。
       </p>
     </form>
   </div>

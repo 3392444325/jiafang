@@ -2,12 +2,12 @@
 -- 织云 ZHIYUN LIVING - MySQL 建表脚本（参考用）
 -- 推荐方式：直接启动 Spring Boot 后端，Hibernate 会自动建表
 -- 此脚本用于手动建表 / 数据库迁移 / DBA 审阅
--- 数据库：zhiyun (CREATE DATABASE IF NOT EXISTS zhiyun)
+-- 数据库：ST_KELLIY (CREATE DATABASE IF NOT EXISTS ST_KELLIY)
 -- 字符集：utf8mb4
 -- =====================================================================
 
-CREATE DATABASE IF NOT EXISTS zhiyun DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE zhiyun;
+CREATE DATABASE IF NOT EXISTS ST_KELLIY DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE ST_KELLIY;
 
 -- ---------------------------------------------------------------------
 -- 用户表

@@ -5,12 +5,18 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* 移动端：禁止 iOS 横屏自动放大正文，并兜底裁掉意外横向溢出
+       （用 clip 而非 hidden，避免生成滚动容器导致页头 sticky 失效） */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: clip;
   }
   body {
     @apply bg-linen text-ink font-body antialiased;
+    overflow-x: clip;
   }
   h1, h2, h3, h4 {
-    @apply font-display font-normal;
+    @apply font-display font-medium;
   }
   ::selection {
     background: rgba(179, 155, 107, 0.25);
@@ -33,19 +39,19 @@
     @apply mx-auto w-full max-w-[1400px] px-5 md:px-10;
   }
   .eyebrow {
-    @apply text-[11px] uppercase tracking-[0.35em] text-gold-deep;
+    @apply text-[14px] uppercase tracking-[0.35em] text-gold-deep;
   }
   .btn-primary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-ink px-8 py-3.5 text-[13px] uppercase tracking-[0.22em] text-ivory transition-colors duration-300 hover:bg-gold-deep;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-ink px-8 py-3.5 text-[15px] uppercase tracking-[0.22em] text-ivory transition-colors duration-300 hover:bg-gold-deep;
   }
   .btn-ghost {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-ink/25 px-8 py-3.5 text-[13px] uppercase tracking-[0.22em] text-ink transition-colors duration-300 hover:border-gold-deep hover:text-gold-deep;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-ink/25 px-8 py-3.5 text-[15px] uppercase tracking-[0.22em] text-ink transition-colors duration-300 hover:border-gold-deep hover:text-gold-deep;
   }
   .btn-ghost-light {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-white/50 px-8 py-3.5 text-[13px] uppercase tracking-[0.22em] text-white transition-colors duration-300 hover:bg-white hover:text-ink;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-white/50 px-8 py-3.5 text-[15px] uppercase tracking-[0.22em] text-white transition-colors duration-300 hover:bg-white hover:text-ink;
   }
   .field {
-    @apply w-full border border-ink/15 bg-white/70 px-4 py-3 text-sm text-ink outline-none transition placeholder:text-ink/30 focus:border-gold-deep focus:bg-white;
+    @apply w-full border border-ink/15 bg-white/70 px-4 py-3 text-[15px] text-ink outline-none transition placeholder:text-ink/70 focus:border-gold-deep focus:bg-white;
   }
   .v-text {
     writing-mode: vertical-rl;
@@ -63,6 +69,27 @@
   }
   .link-underline:hover::after {
     @apply w-full;
+  }
+  /* 压图白字：暗色描边 + 扩散阴影，保证在任何亮底图上都清晰 */
+  .text-shadow-hero {
+    text-shadow:
+      0 2px 24px rgba(12, 10, 8, 0.6),
+      0 1px 4px rgba(12, 10, 8, 0.75);
+  }
+  .text-shadow-soft {
+    text-shadow: 0 1px 14px rgba(12, 10, 8, 0.55);
+  }
+}
+
+@layer utilities {
+  /* 整屏高度：优先 svh（避开移动端浏览器地址栏），旧浏览器回退 vh */
+  .h-vh-screen {
+    height: 100vh;
+    height: 100svh;
+  }
+  .min-h-vh-screen {
+    min-height: 100vh;
+    min-height: 100svh;
   }
 }
 

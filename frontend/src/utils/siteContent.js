@@ -1,0 +1,187 @@
+/**
+ * 全站可配置内容：默认值（与原硬编码内容一致）+ 通用合并函数
+ * 数据存于 site_content 表（key-value），页面设计后台（/designer）编辑；
+ * 前台页面按 key 读取，接口无配置时使用这里的默认值，保证页面永不为空。
+ */
+
+export const SITE_DEFAULTS = {
+  // ================= 品牌故事 /story =================
+  'story.hero': {
+    img: '/images/scenes/scene-6.jpg',
+    eyebrow: 'Our Story · Since 1988',
+    title: '以东方织造，\n致一世安眠。',
+    sub: '三十八年，三代织人，一件事：把「睡个好觉」做成传家的东西。',
+  },
+  'story.timeline': [
+    { year: '1988', text: 'ST.KELLY前身「云记织坊」创立于杭州，以一匹手织真丝起家。' },
+    { year: '2004', text: '首个鹅绒被系列问世，确立「只做睡得起的奢侈品」之定位。' },
+    { year: '2012', text: '启动全球原材臻选计划，深入西伯利亚绒带与江南蚕区。' },
+    { year: '2018', text: '「深睡」系列荣获德国红点设计奖，中国床品首获此殊荣。' },
+    { year: '2024', text: '与前GUCCI印花设计总监达成联名，艺术家纺进入大众视野。' },
+    { year: '2026', text: '品牌全面升级为 ST.KELLY，以东方织造致一世安眠。' },
+  ],
+  'story.crafts': [
+    { img: '/images/scenes/scene-1.jpg', n: '壹', t: '原材 · 万里挑一', d: '95白鹅绒只取绒朵最饱满的一束，桑蚕丝只用一级长丝，长绒棉非 60 支以上不用。原材入仓前，历经 27 项检测。' },
+    { img: '/images/scenes/scene-5.jpg', n: '贰', t: '织造 · 古法今艺', d: '立衬分区、手工定位、贡缎素织——老师傅的手艺与现代化数字织机同工，一道被芯要经过 43 道工序方能出厂。' },
+    { img: '/images/scenes/scene-3.jpg', n: '叁', t: '检控 · 吹毛求疵', d: '每一床织物出厂前经过防钻绒、色牢度、pH 值等 9 重检控，不合格者现场销毁——38 年，从未破例。' },
+  ],
+  'story.materials': [
+    { img: '/images/products/p01.jpg', name: '95 白鹅绒', en: 'White Goose Down', origin: '西伯利亚绒带', desc: '只取绒朵最饱满的一束，蓬松度 800+，锁住整夜恒温。' },
+    { img: '/images/products/p02.jpg', name: '桑蚕丝长丝', en: 'Mulberry Silk', origin: '江南蚕区', desc: '一级长丝手工定位，丝胎如云，贴合每一寸翻身。' },
+    { img: '/images/products/p05.jpg', name: '新疆长绒棉', en: 'Long-staple Cotton', origin: '新疆棉区', desc: '非 60 支以上不用，织出贡缎的月光光泽。' },
+    { img: '/images/products/p07.jpg', name: '兰精天丝', en: 'TENCEL™ Lyocell', origin: '奥地利', desc: '木源纤维，接触瞬凉，湿气管理与生俱来。' },
+    { img: '/images/products/p10.jpg', name: '美利奴羊毛', en: 'Merino Wool', origin: '澳洲', desc: '恒温锁暖，冬被的恰好处方。' },
+    { img: '/images/products/p11.jpg', name: '雨露亚麻', en: 'Natural Linen', origin: '法国诺曼底', desc: '天然肌理，越洗越柔软的时光感。' },
+  ],
+  'story.stores': [
+    { city: '杭州', name: '万象城旗舰店', addr: '江干区富春路 701 号 L2-08' },
+    { city: '上海', name: '恒隆广场精品店', addr: '静安区南京西路 1266 号 3F' },
+    { city: '北京', name: 'SKP 专柜', addr: '朝阳区大望桥 SKP 4F' },
+    { city: '成都', name: 'IFS 精品店', addr: '锦江区红星路三段 1 号 L5' },
+  ],
+  'story.stats': [
+    { to: 43, suffix: '', label: '道出厂工序' },
+    { to: 27, suffix: '', label: '项原材检测' },
+    { to: 9, suffix: '', label: '重出厂检控' },
+    { to: 1600, suffix: '+', label: '位织造匠人' },
+  ],
+  'story.service': [
+    { t: '深度洗护', d: '每年 2 次免费专业洗护与除螨' },
+    { t: '翻新收纳', d: '换季免费真空收纳与翻新塑形' },
+    { t: '以旧换新', d: '旧被抵扣，循环再生计划承接' },
+    { t: '睡眠档案', d: '专属顾问定期回访调优睡眠组合' },
+  ],
+
+  // ================= 招商加盟 /franchise =================
+  'franchise.hero': {
+    img: '/images/scenes/scene-5.jpg',
+    eyebrow: 'Franchise',
+    title: '招商加盟',
+    sub: '与ST.KELLY同行，把「睡个好觉」的生意带到你的城市。一城一策，共创长期价值。',
+  },
+  'franchise.stats': [
+    { to: 1200, suffix: '+', label: '家线下门店' },
+    { to: 700, suffix: '+', label: '座覆盖城市' },
+    { to: 38, suffix: '', label: '年品牌传承' },
+    { to: 92, suffix: '%', label: '加盟续约率' },
+  ],
+  'franchise.supports': [
+    { n: '壹', t: '选址评估', d: '商圈客流与竞争测算，总部一城一策出具选址报告。' },
+    { n: '贰', t: '装修设计', d: 'SI 标准空间设计，装修补贴与统一物料配送。' },
+    { n: '叁', t: '培训体系', d: '产品、陈列、销售 21 天驻店实训，考核上岗。' },
+    { n: '肆', t: '开业带教', d: '督导驻店 30 天，从开业活动到会员沉淀全程带教。' },
+    { n: '伍', t: '营销支持', d: '全年四大营销节点方案与物料，总部直播导流。' },
+    { n: '陆', t: '数字系统', d: '会员、库存、洗护档案一体化系统，总部云端赋能。' },
+  ],
+  'franchise.requirements': [
+    '认同「ST.KELLY」品牌理念与东方美学的经营方向',
+    '临街或商场铺位 80㎡ 以上，具备消防安全条件',
+    '具备充足的启动资金与流动资金',
+    '有零售、家居或服装行业经验者优先',
+  ],
+  'franchise.steps': ['咨询洽谈', '资质评估', '签约授权', '选址装修', '培训开业'],
+
+  // ================= 团购定制 /group-buy =================
+  'groupbuy.hero': {
+    img: '/images/scenes/scene-4.jpg',
+    eyebrow: 'Corporate & Bulk',
+    title: '团购定制',
+    sub: '企业福利、婚庆回礼与工程定制——以批量价格，享品牌级品质与服务。',
+  },
+  'groupbuy.scenes': [
+    { img: '/images/scenes/scene-2.jpg', t: '企业福利', d: '员工生日礼、节日关怀与年度健康睡眠礼盒，批量价与专属包装。' },
+    { img: '/images/scenes/scene-5.jpg', t: '婚庆回礼', d: '十件套新婚礼盒与伴手礼定制，绣字、礼卡与贺词一站式。' },
+    { img: '/images/scenes/scene-3.jpg', t: '酒店工程', d: '民宿、酒店与地产精装项目，阻燃与白鹅绒等级按需定制。' },
+  ],
+  'groupbuy.steps': ['需求沟通', '方案报价', '打样确认', '生产交付', '售后跟踪'],
+  'groupbuy.promises': ['专属顾问', '免费打样', '批量优惠', '顺丰物流', '支持开票'],
+
+  // ================= 新闻页头图（编辑入口：DesignerNews） =================
+  'news.hero': {
+    img: '/images/scenes/scene-2.jpg',
+    eyebrow: 'Newsroom',
+    title: '品牌动态',
+    sub: 'ST.KELLY的每一步，都与你有关——新品发布、品牌荣誉与来自一线的故事。',
+  },
+
+  // ================= 商城头图（编辑入口：DesignerHome） =================
+  'shop.hero': {
+    img: '/images/heroes/hero-2.jpg',
+    eyebrow: 'ST.KELLY Official Store',
+    title: '秋季焕新 · 官方商城',
+    sub: '全场满 ¥1,299 减 ¥150 · 顺丰包邮 · 30 天无忧退换\n新会员注册即赠 ¥100 礼遇',
+  },
+
+  // ================= 首页（编辑入口：DesignerHome） =================
+  'home.hero': {
+    slides: [
+      { src: '/images/heroes/hero-1.jpg', eyebrow: 'ST.KELLY · Since 1988', title: '以东方织造，\n致一世安眠', sub: '三十八年，三代织人，一件事：把「睡个好觉」，做成值得传家的东西。', href: '/story', cta: '走进品牌' },
+      { src: '/images/heroes/hero-2.jpg', eyebrow: 'Craftsmanship · 匠心', title: '不赶时间，只赶手艺', sub: '绒朵、长丝与贡缎——95% 的预算花在看不见的地方。27 项原材检测，43 道出厂工序。', href: '/story', cta: '了解匠心' },
+      { src: '/images/heroes/hero-3.jpg', eyebrow: 'Master Collaboration · 大师联名', title: '当莫奈的睡莲，\n开在枕畔', sub: '与前GUCCI印花设计总监联名，十六色渐变直喷——艺术家纺，自此有了模样。', href: '/shop', cta: '走进官方商城' },
+    ],
+  },
+  'home.philosophy': {
+    eyebrow: 'Philosophy',
+    title: 'ST.KELLY，织的是时间',
+    desc: '从一颗茧、一束绒到一寸缎，ST.KELLY坚持最古老的方式：不赶时间，只赶手艺。我们把「睡个好觉」这件事，做成了值得传家的东西。',
+  },
+  'home.collab': {
+    image: '/images/scenes/scene-4.jpg',
+    title: '当莫奈的睡莲，\n开在枕畔。',
+    desc: '与前 GUCCI 印花设计总监联手的艺术家纺系列——十六色渐变直喷工艺，将《睡莲》的光影移植到 100 支贡缎之上。',
+  },
+
+  // ================= 全站联系方式（编辑入口：DesignerGlobal） =================
+  'global.contact': {
+    hotline: '400-860-1988',
+    hours: '9:00 - 21:00',
+    franchiseEmail: 'franchise@st-kelly.cn',
+    groupPhone: '400-860-1988 转 2',
+    groupEmail: 'group@st-kelly.cn',
+  },
+}
+
+/** 取 keys 子集的默认值（深拷贝） */
+export function pickDefaults(keys) {
+  const out = {}
+  for (const k of keys) {
+    if (SITE_DEFAULTS[k] !== undefined) out[k] = structuredClone(SITE_DEFAULTS[k])
+  }
+  return out
+}
+
+/**
+ * 将接口返回的配置合并到默认结构上：
+ * - 对象：浅合并（缺字段回退默认值）
+ * - 数组：逐项与默认数组同位置项浅合并（补齐旧数据缺失的新字段），字符串数组原样替换
+ */
+export function mergeContent(defs, incoming) {
+  const result = structuredClone(defs)
+  if (!incoming) return result
+  for (const key of Object.keys(result)) {
+    const v = incoming[key]
+    if (v == null) continue
+    if (Array.isArray(v)) {
+      result[key] = mergeArray(result[key], v)
+    } else if (typeof v === 'object') {
+      result[key] = { ...result[key], ...v }
+      // 对象内部还可能嵌套数组（如 home.hero.slides）
+      for (const k of Object.keys(result[key])) {
+        const dv = result[key][k]
+        const iv = v[k]
+        if (Array.isArray(dv) && Array.isArray(iv)) result[key][k] = mergeArray(dv, iv)
+      }
+    }
+  }
+  return result
+}
+
+function mergeArray(defArr, arr) {
+  return arr.map((it, i) => {
+    if (it && typeof it === 'object' && !Array.isArray(it)) {
+      const def = Array.isArray(defArr) ? defArr[i] : null
+      return def && typeof def === 'object' ? { ...def, ...it } : it
+    }
+    return it
+  })
+}

@@ -1,0 +1,53 @@
+<view class="page">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <input
+      class="search-input"
+      placeholder="搜索商品"
+      placeholder-class="search-ph"
+      confirm-type="search"
+      value="{{q}}"
+      focus="{{focus}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearchConfirm"
+    />
+    <view class="search-btn" bindtap="onSearchConfirm">搜索</view>
+  </view>
+
+  <!-- 分类筛选 -->
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view
+      class="chip {{cat === item.slug ? 'chip-on' : ''}}"
+      wx:for="{{categories}}"
+      wx:key="slug"
+      data-slug="{{item.slug}}"
+      bindtap="pickCat"
+    >
+      {{item.name}}
+    </view>
+  </scroll-view>
+
+  <!-- 排序 -->
+  <view class="sorts">
+    <view
+      class="sort {{sort === item.key ? 'sort-on' : ''}}"
+      wx:for="{{sorts}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="pickSort"
+    >
+      {{item.label}}
+    </view>
+    <text class="count">共 {{total}} 件</text>
+  </view>
+
+  <!-- 商品网格 -->
+  <view class="grid">
+    <view class="grid-item" wx:for="{{shown}}" wx:key="slug">
+      <product-card product="{{item}}" />
+    </view>
+  </view>
+  <view wx:if="{{!loading && !shown.length}}" class="empty">没有找到相关商品</view>
+  <view wx:if="{{hasMore}}" class="loading-more">上拉加载更多…</view>
+  <view wx:if="{{!hasMore && shown.length}}" class="loading-more">— 已经到底啦 —</view>
+</view>

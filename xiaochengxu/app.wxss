@@ -1,0 +1,130 @@
+/* 全局样式 —— ST.KELLY小程序（品牌色与官网一致） */
+page {
+  --ink: #1c1b19;
+  --ink-soft: #55514a;
+  --ivory: #fbf9f4;
+  --linen: #f7f3ec;
+  --sand: #efe7da;
+  --clay: #d9c7b2;
+  --gold: #b39b6b;
+  --gold-deep: #8f7a50;
+  --muted: #999;
+  --line: rgba(28, 27, 25, 0.08);
+
+  background: #f5f2ec;
+  color: var(--ink);
+  font-size: 28rpx;
+  line-height: 1.6;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+}
+
+/* 通用卡片 */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+/* 按钮 */
+.btn-primary {
+  background: var(--ink);
+  color: var(--ivory);
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 12rpx;
+  text-align: center;
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+}
+.btn-primary.disabled {
+  opacity: 0.45;
+}
+.btn-gold {
+  background: var(--gold-deep);
+  color: #fff;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 12rpx;
+  text-align: center;
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1rpx solid rgba(28, 27, 25, 0.25);
+  height: 88rpx;
+  line-height: 84rpx;
+  border-radius: 12rpx;
+  text-align: center;
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+}
+
+/* 表单 */
+.field {
+  background: var(--ivory);
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  width: 100%;
+}
+.form-label {
+  display: block;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  margin-bottom: 10rpx;
+  letter-spacing: 2rpx;
+}
+
+/* 排版辅助 */
+.muted { color: var(--muted); }
+.ink-soft { color: var(--ink-soft); }
+.gold { color: var(--gold); }
+.gold-deep { color: var(--gold-deep); }
+.price { color: var(--gold-deep); font-weight: 600; }
+.eyebrow {
+  font-size: 20rpx;
+  letter-spacing: 8rpx;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.section-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+}
+.hairline { border-bottom: 1rpx solid var(--line); }
+
+/* iPhone 底部安全区 */
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 底部固定操作栏 */
+.fixed-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-shadow: 0 -2rpx 12rpx rgba(28, 27, 25, 0.06);
+  z-index: 50;
+}
+
+/* 空状态 */
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 26rpx;
+  padding: 120rpx 0;
+}

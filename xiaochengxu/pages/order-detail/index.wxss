@@ -1,0 +1,169 @@
+.loading-tip {
+  text-align: center;
+  color: var(--muted);
+  padding: 160rpx 0;
+}
+
+.card {
+  margin: 24rpx;
+  padding: 28rpx;
+}
+.sec-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 状态区 */
+.status-hero {
+  padding: 36rpx 28rpx;
+}
+.sh-text {
+  font-size: 40rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+}
+.sh-sub {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+.sh-badge {
+  display: inline-block;
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: #b04a42;
+  border: 1rpx solid #b04a42;
+  border-radius: 999rpx;
+  padding: 4rpx 20rpx;
+}
+
+/* 状态色 */
+.st-PENDING_PAYMENT {
+  color: var(--gold-deep);
+}
+.st-PAID {
+  color: #1d7a53;
+}
+.st-SHIPPED {
+  color: #3a6ea5;
+}
+.st-COMPLETED {
+  color: var(--muted);
+}
+.st-CANCELLED {
+  color: #b04a42;
+}
+
+/* 信息行 */
+.d-row {
+  display: flex;
+  gap: 24rpx;
+  padding: 12rpx 0;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+.d-label {
+  width: 140rpx;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.d-no {
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
+}
+.copy-tag {
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: var(--gold-deep);
+  border: 1rpx solid var(--gold-deep);
+  border-radius: 999rpx;
+  padding: 2rpx 18rpx;
+  white-space: nowrap;
+}
+
+/* 商品清单 */
+.g-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.g-item:last-child {
+  border-bottom: none;
+}
+.g-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  background: var(--sand);
+  flex-shrink: 0;
+}
+.g-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clay);
+  font-size: 26rpx;
+  letter-spacing: 4rpx;
+}
+.g-info {
+  flex: 1;
+  min-width: 0;
+}
+.g-name {
+  font-size: 26rpx;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.g-qty {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+/* 金额 */
+.amt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 底部操作栏 */
+.page-foot-space {
+  height: 160rpx;
+}
+.bar-ghost {
+  flex: 1;
+  height: 80rpx;
+  line-height: 78rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+  border: 1rpx solid rgba(28, 27, 25, 0.3);
+  color: var(--ink);
+}
+.bar-buy {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+  background: var(--ink);
+  color: var(--ivory);
+}
+.bar-buy.disabled {
+  opacity: 0.5;
+}
+.bar-ghost.full {
+  background: transparent;
+}

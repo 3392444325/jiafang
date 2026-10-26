@@ -21,6 +21,16 @@ public final class JsonUtil {
         }
     }
 
+    /** 解析任意 JSON（对象/数组/标量）为 Java 对象，失败返回 null */
+    public static Object parseValue(String json) {
+        if (json == null || json.isBlank()) return null;
+        try {
+            return MAPPER.readValue(json, Object.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static List<Map<String, String>> parseSpecList(String json) {
         if (json == null || json.isBlank()) return Collections.emptyList();
         try {

@@ -77,7 +77,7 @@ onMounted(() => {
         </div>
         <router-link
           to="/admin/products"
-          class="text-[11px] tracking-[0.2em] text-gold-deep hover:text-ink"
+          class="text-[14px] tracking-[0.2em] text-gold-deep hover:text-ink"
         >
           ← 返回列表
         </router-link>
@@ -88,21 +88,21 @@ onMounted(() => {
         class="mt-8 grid gap-4 border border-ink/10 bg-ivory p-6 sm:grid-cols-2"
       >
         <label class="sm:col-span-2">
-          <span class="mb-1.5 block text-[11px] tracking-[0.2em] text-ink/50">商品名称</span>
+          <span class="mb-1.5 block text-[14px] tracking-[0.2em] text-ink/80">商品名称</span>
           <input v-model="form.name" class="field" required />
         </label>
         <label class="sm:col-span-2">
-          <span class="mb-1.5 block text-[11px] tracking-[0.2em] text-ink/50">副标题（选填）</span>
+          <span class="mb-1.5 block text-[14px] tracking-[0.2em] text-ink/80">副标题（选填）</span>
           <input v-model="form.subtitle" class="field" />
         </label>
         <label>
-          <span class="mb-1.5 block text-[11px] tracking-[0.2em] text-ink/50">分类</span>
+          <span class="mb-1.5 block text-[14px] tracking-[0.2em] text-ink/80">分类</span>
           <select v-model="form.categoryId" class="field" required>
             <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
           </select>
         </label>
         <label>
-          <span class="mb-1.5 block text-[11px] tracking-[0.2em] text-ink/50">售价（元）</span>
+          <span class="mb-1.5 block text-[14px] tracking-[0.2em] text-ink/80">售价（元）</span>
           <input
             v-model="form.price"
             type="number"
@@ -113,7 +113,7 @@ onMounted(() => {
           />
         </label>
         <label>
-          <span class="mb-1.5 block text-[11px] tracking-[0.2em] text-ink/50">库存</span>
+          <span class="mb-1.5 block text-[14px] tracking-[0.2em] text-ink/80">库存</span>
           <input
             v-model.number="form.stock"
             type="number"
@@ -124,13 +124,13 @@ onMounted(() => {
           />
         </label>
         <label class="flex items-end pb-1">
-          <span class="flex cursor-pointer items-center gap-3 text-xs tracking-[0.15em] text-ink/60">
+          <span class="flex cursor-pointer items-center gap-3 text-[14px] tracking-[0.15em] text-ink/75">
             <input v-model="form.featured" type="checkbox" class="accent-[#8F7A50]" />
             设为首页「当季精选」
           </span>
         </label>
         <label class="sm:col-span-2">
-          <span class="mb-1.5 block text-[11px] tracking-[0.2em] text-ink/50">商品描述</span>
+          <span class="mb-1.5 block text-[14px] tracking-[0.2em] text-ink/80">商品描述</span>
           <textarea v-model="form.description" class="field" rows="4" />
         </label>
         <div class="sm:col-span-2">

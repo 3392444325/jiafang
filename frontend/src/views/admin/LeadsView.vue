@@ -61,41 +61,41 @@ onMounted(() => {
   <AdminLayout>
     <div class="space-y-5">
       <div class="flex items-center justify-between">
-        <p class="text-xs tracking-[0.25em] text-ink/50">
+        <p class="text-[14px] tracking-[0.25em] text-ink/80">
           全部线索（{{ leads.length }}）<span v-if="newCount > 0"> · {{ newCount }} 条待跟进</span>
         </p>
       </div>
 
       <p
         v-if="leads.length === 0"
-        class="border border-ink/10 bg-ivory py-20 text-center text-sm text-ink/40"
+        class="border border-ink/10 bg-ivory py-20 text-center text-[15px] text-ink/75"
       >
         暂无机会议——招商 / 团购 / 合作表单提交后将显示在这里。
       </p>
 
       <div v-for="l in leads" :key="l.id" class="border border-ink/10 bg-ivory">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 px-6 py-4 text-sm">
-          <span class="border border-gold/40 bg-gold/10 px-2.5 py-0.5 text-[11px] tracking-[0.2em] text-gold-deep">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 px-6 py-4 text-[15px]">
+          <span class="border border-gold/40 bg-gold/10 px-2.5 py-0.5 text-[14px] tracking-[0.2em] text-gold-deep">
             {{ LEAD_TYPE[l.type] ?? l.type }}
           </span>
           <span class="tracking-[0.15em] text-ink">{{ l.name }}</span>
-          <span class="font-display text-base text-ink/80">{{ l.phone }}</span>
-          <span class="text-xs text-ink/45">{{ formatDateTime(l.createdAt) }}</span>
-          <span :class="`border px-2.5 py-0.5 text-[11px] ${(LEAD_STATUS[l.status] ?? LEAD_STATUS.NEW).cls}`">
+          <span class="font-display text-base text-ink/90">{{ l.phone }}</span>
+          <span class="text-[14px] text-ink/75">{{ formatDateTime(l.createdAt) }}</span>
+          <span :class="`border px-2.5 py-0.5 text-[14px] ${(LEAD_STATUS[l.status] ?? LEAD_STATUS.NEW).cls}`">
             {{ (LEAD_STATUS[l.status] ?? LEAD_STATUS.NEW).label }}
           </span>
         </div>
         <div class="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <p class="min-w-0 flex-1 text-xs leading-relaxed text-ink/55">
+          <p class="min-w-0 flex-1 text-[14px] leading-relaxed text-ink/80">
             {{ l.note || '（未填写意向说明）' }}
           </p>
           <form @submit.prevent="updateStatus(l)" class="flex items-center gap-3">
-            <select v-model="statusDraft[l.id]" class="field w-auto! py-2! text-xs">
+            <select v-model="statusDraft[l.id]" class="field w-auto! py-2! text-[14px]">
               <option v-for="s in STATUS_OPTIONS" :key="s.value" :value="s.value">{{ s.label }}</option>
             </select>
             <button
               type="submit"
-              class="cursor-pointer border border-ink/20 px-4 py-2 text-[11px] tracking-[0.2em] text-ink/70 transition-colors hover:border-gold-deep hover:text-gold-deep"
+              class="cursor-pointer border border-ink/20 px-4 py-2 text-[14px] tracking-[0.2em] text-ink/80 transition-colors hover:border-gold-deep hover:text-gold-deep"
             >
               更新状态
             </button>

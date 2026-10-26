@@ -73,11 +73,11 @@ async function pay() {
     <p class="mt-6 font-display text-2xl tracking-[0.2em] text-gold-deep">
       支付成功
     </p>
-    <p class="mt-3 text-sm tracking-[0.15em] text-ink/60">
+    <p class="mt-3 text-[15px] tracking-[0.15em] text-ink/75">
       {{ METHOD_LABEL[method] }} · {{ yuan(totalFen) }} · 订单号 {{ orderNo }}
     </p>
-    <p class="mt-2 text-xs tracking-[0.15em] text-ink/45">
-      我们将以顺丰极速为你安排发货，织云七星洗护已同步生效。
+    <p class="mt-2 text-[14px] tracking-[0.15em] text-ink/75">
+      我们将以顺丰极速为你安排发货，ST.KELLY七星洗护已同步生效。
     </p>
     <div class="mt-8 flex items-center justify-center gap-6">
       <router-link :to="`/orders/${orderId}`" class="btn-primary">
@@ -90,7 +90,7 @@ async function pay() {
   </div>
 
   <div v-else class="border border-ink/10 bg-ivory">
-    <div class="border-b border-ink/10 px-6 py-4 text-xs tracking-[0.25em] text-ink/50">
+    <div class="border-b border-ink/10 px-6 py-4 text-[14px] tracking-[0.25em] text-ink/80">
       选择支付方式
     </div>
     <div class="grid gap-3 p-6 sm:grid-cols-3">
@@ -105,7 +105,7 @@ async function pay() {
           method === m.key ? 'border-gold-deep bg-linen' : 'border-ink/15 hover:border-ink/40',
         ]"
       >
-        <span :class="method === m.key ? 'text-gold-deep' : 'text-ink/50'">
+        <span :class="method === m.key ? 'text-gold-deep' : 'text-ink/80'">
           <svg
             v-if="m.key === 'WECHAT'"
             width="28"
@@ -137,14 +137,14 @@ async function pay() {
             <path d="M2.5 9.5h19" />
           </svg>
         </span>
-        <span class="text-sm tracking-[0.2em] text-ink">{{ m.label }}</span>
-        <span class="text-[10px] tracking-[0.15em] text-ink/40">
+        <span class="text-[15px] tracking-[0.2em] text-ink">{{ m.label }}</span>
+        <span class="text-[13px] tracking-[0.15em] text-ink/75">
           {{ m.hint }}
         </span>
       </button>
     </div>
     <div class="flex flex-col items-center gap-4 border-t border-ink/10 px-6 py-6">
-      <p v-if="error" class="text-xs tracking-[0.15em] text-red-700">{{ error }}</p>
+      <p v-if="error" class="text-[14px] tracking-[0.15em] text-red-700">{{ error }}</p>
       <button
         @click="pay"
         :disabled="phase === 'processing'"
@@ -155,7 +155,7 @@ async function pay() {
       <button
         v-if="phase === 'fail'"
         @click="phase = 'select'"
-        class="cursor-pointer text-[11px] tracking-[0.2em] text-ink/50 hover:text-ink"
+        class="cursor-pointer text-[14px] tracking-[0.2em] text-ink/80 hover:text-ink"
       >
         ← 重新选择支付方式
       </button>

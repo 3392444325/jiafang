@@ -1,0 +1,17 @@
+.price-box {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10rpx;
+}
+.price-box .p {
+  color: var(--gold-deep, #8f7a50);
+  font-weight: 600;
+  font-size: 30rpx;
+}
+.price-box .c {
+  color: rgba(28, 27, 25, 0.3);
+  font-size: 22rpx;
+  text-decoration: line-through;
+}
+.price-box.sm .p { font-size: 26rpx; }
+.price-box.lg .p { font-size: 40rpx; }

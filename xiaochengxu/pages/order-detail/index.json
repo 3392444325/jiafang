@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "订单详情",
+  "backgroundColor": "#f5f2ec",
+  "usingComponents": {
+    "price": "/components/price/index"
+  }
+}

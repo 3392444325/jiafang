@@ -30,8 +30,8 @@ const alignCls = computed(() =>
     />
     <p
       v-if="desc"
-      class="mt-5 text-sm leading-loose"
-      :class="light ? 'text-ivory/65' : 'text-ink-soft'"
+      class="mt-5 text-[15px] leading-loose"
+      :class="light ? 'text-ivory/85' : 'text-ink-soft'"
     >
       {{ desc }}
     </p>

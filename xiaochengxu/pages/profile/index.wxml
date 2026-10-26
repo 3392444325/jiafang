@@ -1,0 +1,38 @@
+<view class="page">
+  <!-- 会员头卡 -->
+  <view class="head-card">
+    <text class="head-eyebrow">ST.KELLY</text>
+    <block wx:if="{{user}}">
+      <view class="head-tag">ST.KELLY会员</view>
+      <view class="head-name">{{user.name}}</view>
+      <view class="head-email">{{user.email}}</view>
+    </block>
+    <block wx:else>
+      <view class="head-tag">ST.KELLY会员</view>
+      <view class="head-name">欢迎来到ST.KELLY</view>
+      <view class="head-btns">
+        <view class="head-btn head-btn-main" bindtap="goLogin">登录</view>
+        <view class="head-btn" bindtap="goRegister">注册</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 菜单 -->
+  <view class="menu card">
+    <view class="menu-row" bindtap="goOrder">
+      <text class="menu-label">我的订单</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-row" bindtap="goAddress">
+      <text class="menu-label">收货地址</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-row" bindtap="goLeads">
+      <text class="menu-label">意向登记</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view wx:if="{{user}}" class="menu-row menu-logout" bindtap="logout">
+      <text>退出登录</text>
+    </view>
+  </view>
+</view>

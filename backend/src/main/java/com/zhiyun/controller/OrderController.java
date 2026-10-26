@@ -33,7 +33,10 @@ public class OrderController {
     @PostMapping
     public Map<String, Object> create(@RequestBody Map<String, Object> body) {
         SafeUser u = requireLogin();
-        Boolean saveAddress = body.get("saveAddress") instanceof Boolean b ? b : null;
+        Boolean saveAddress = null;
+        Object sav = body.get("saveAddress");
+        if (sav instanceof Boolean b) saveAddress = b;
+        else if (sav instanceof String s && !s.isBlank()) saveAddress = Boolean.parseBoolean(s);
         return orderService.createOrder(u.id(),
                 (String) body.get("name"), (String) body.get("phone"),
                 (String) body.get("province"), (String) body.get("city"),
@@ -54,6 +57,22 @@ public class OrderController {
         String method = body == null ? "WECHAT" : (String) body.get("method");
         String paid = orderService.payOrder(id, u, method);
         return Map.of("ok", true, "payMethod", paid);
+    }
+
+    /** 客户取消订单（仅待付款） */
+    @PostMapping("/{id}/cancel")
+    public Map<String, Object> cancel(@PathVariable String id) {
+        SafeUser u = requireLogin();
+        orderService.cancelOrder(id, u);
+        return Map.of("ok", true, "status", "CANCELLED");
+    }
+
+    /** 客户提交撤销申请（仅已付款；商家审核后退款取消） */
+    @PostMapping("/{id}/cancel-request")
+    public Ok requestCancel(@PathVariable String id) {
+        SafeUser u = requireLogin();
+        orderService.requestCancel(id, u);
+        return Ok.yes();
     }
 
     private SafeUser requireLogin() {

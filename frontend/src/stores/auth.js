@@ -6,6 +6,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null, // { id, email, name, role }
     loading: false,
+    booted: false, // 是否已做过会话恢复（/auth/me）
   }),
   getters: {
     isLoggedIn: (s) => !!s.user,
@@ -13,35 +14,42 @@ export const useAuthStore = defineStore('auth', {
     displayName: (s) => s.user?.name || s.user?.email || '',
   },
   actions: {
+    /** 路由守卫等处使用：确保启动时恢复过一次登录态，之后直接返回 */
+    async ensureLoaded() {
+      if (this.booted) return
+      this.booted = true
+      await this.fetchCurrentUser()
+    },
     async fetchCurrentUser() {
       try {
         const res = await authApi.me()
         this.user = res.user && res.user.id ? res.user : null
       } catch {
         this.user = null
+      } finally {
+        this.booted = true
       }
     },
     async login(email, password) {
       const res = await authApi.login({ email, password })
       await this.fetchCurrentUser()
-      // 登录成功后后端已合并游客购物车，刷新购物车角标与列表
-      const cart = useCartStore()
-      await Promise.all([cart.fetchCount(), cart.fetchItems()])
+      // 登录会合并游客购物车，徽标需按合并结果刷新
+      useCartStore().reset()
+      await useCartStore().fetchCount()
       return res
     },
     async register(email, password, name) {
       const res = await authApi.register({ email, password, name })
       await this.fetchCurrentUser()
-      const cart = useCartStore()
-      await Promise.all([cart.fetchCount(), cart.fetchItems()])
+      useCartStore().reset()
+      await useCartStore().fetchCount()
       return res
     },
     async logout() {
       await authApi.logout()
       this.user = null
-      // 退出后后端已删除会话并清 Cookie，重置购物车状态
-      const cart = useCartStore()
-      cart.$reset()
+      // 清空本地购物车状态（服务端 Cookie 已清除，游客购物车为空）
+      useCartStore().reset()
     },
   },
 })

@@ -42,6 +42,16 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query("select o.status as status, count(o) as cnt from Order o group by o.status")
     List<StatusCount> countByStatus();
 
+    /** 管理端订单检索：数据库级状态/订单号过滤 */
+    @Query("""
+            select distinct o from Order o
+            left join fetch o.user
+            where (:status is null or o.status = :status)
+              and (:q is null or o.orderNo like concat('%', :q, '%'))
+            order by o.createdAt desc
+            """)
+    List<Order> searchOrders(String status, String q);
+
     interface StatusCount {
         String getStatus();
         Long getCnt();

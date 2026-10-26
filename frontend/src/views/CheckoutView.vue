@@ -34,7 +34,7 @@ onMounted(async () => {
 
       <template v-if="!loading">
         <div v-if="cart.items.length === 0" class="py-24 text-center">
-          <p class="font-display text-2xl tracking-[0.2em] text-ink/60">
+          <p class="font-display text-2xl tracking-[0.2em] text-ink/75">
             购物车是空的，无法结算
           </p>
           <router-link to="/products" class="btn-primary mt-10">

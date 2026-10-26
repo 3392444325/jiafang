@@ -9,10 +9,13 @@ import com.zhiyun.exception.BizException;
 import com.zhiyun.repository.CartItemRepository;
 import com.zhiyun.repository.SessionRepository;
 import com.zhiyun.repository.UserRepository;
+import com.zhiyun.util.RateLimit;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,8 +24,6 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 认证与购物车归属解析 —— 移植自 lib/auth.ts
@@ -36,23 +37,15 @@ public class AuthService {
     private static final SecureRandom RANDOM = new SecureRandom();
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
-    // ===== 登录防爆破：按邮箱计数，连续失败 5 次锁定 15 分钟 =====
-    private static final int MAX_LOGIN_ATTEMPTS = 5;
-    private static final long LOGIN_LOCK_MILLIS = 15 * 60 * 1000L;
-    /** value: [失败次数, 锁定截止时间戳] */
-    private final Map<String, long[]> loginAttempts = new ConcurrentHashMap<>();
-
-    // ===== 游客会话创建限流：每 IP 每分钟最多 20 个（防脚本刷库） =====
-    private static final int MAX_GUEST_SESSIONS_PER_WINDOW = 20;
-    private static final long GUEST_WINDOW_MILLIS = 60_000L;
-    /** value: [窗口内计数, 窗口起始时间戳] */
-    private final Map<String, long[]> guestSessionCounter = new ConcurrentHashMap<>();
-
     @Autowired private HttpServletRequest request;
     @Autowired private HttpServletResponse response;
     @Autowired private SessionRepository sessionRepo;
     @Autowired private UserRepository userRepo;
     @Autowired private CartItemRepository cartRepo;
+
+    /** 生产环境（HTTPS）应设为 true，使 session cookie 带 Secure 标记 */
+    @Value("${zy.cookie.secure:false}")
+    private boolean cookieSecure;
 
     public String hashPassword(String plain) {
         return encoder.encode(plain);
@@ -73,9 +66,10 @@ public class AuthService {
         return new SafeUser(u.getId(), u.getEmail(), u.getName(), u.getRole());
     }
 
-    /** 解析购物车归属：登录用户→userId；游客→sessionId（不存在则创建游客会话并下发 cookie） */
+    /** 解析购物车归属：登录用户→userId；游客→sessionId */
+    /** createIfAbsent=false 时（只读场景）无有效会话则返回 null，不产生新会话 */
     @Transactional
-    public CartOwner resolveCartOwner() {
+    public CartOwner resolveCartOwner(boolean createIfAbsent) {
         String token = readCookie();
         if (token != null) {
             Session s = sessionRepo.findByToken(token).orElse(null);
@@ -84,7 +78,7 @@ public class AuthService {
                 return CartOwner.session(s.getId());
             }
         }
-        assertGuestSessionQuota();
+        if (!createIfAbsent) return null;
         Session s = createSession(null);
         setCookie(s.getToken(), s.getExpiresAt());
         return CartOwner.session(s.getId());
@@ -108,44 +102,45 @@ public class AuthService {
         u.setName(name.trim());
         u.setRole("CUSTOMER");
         u = userRepo.save(u);
-        mergeGuestSessionCart(u.getId());
+        // 与登录一致：合并游客购物车并作废旧会话
+        String oldToken = readCookie();
+        if (oldToken != null) {
+            Session old = sessionRepo.findByToken(oldToken).orElse(null);
+            if (old != null) {
+                if (old.getUserId() == null) {
+                    mergeGuestCart(old.getId(), u.getId());
+                }
+                sessionRepo.delete(old);
+            }
+        }
         loginUser(u.getId());
         return new SafeUser(u.getId(), u.getEmail(), u.getName(), u.getRole());
     }
 
-    /** 当前游客会话的购物车合并到用户名下，并删除旧游客会话 */
-    private void mergeGuestSessionCart(String userId) {
-        String oldToken = readCookie();
-        if (oldToken == null) return;
-        Session old = sessionRepo.findByToken(oldToken).orElse(null);
-        if (old != null && old.getUserId() == null) {
-            mergeGuestCart(old.getId(), userId);
-            // 必须先 flush：Session.cartItems 配置了 cascade=REMOVE，
-            // 若不先落库（条目 session_id 已置 NULL），删除会话时级联会把刚迁移的条目一并删除
-            cartRepo.flush();
-            sessionRepo.delete(old);
-        }
-    }
-
-    /** 登录：校验密码 → 合并游客购物车 → 下发新会话 cookie */
+    /** 登录：校验密码 → 合并游客购物车 → 下发新会话 cookie（连续失败 5 次锁定 15 分钟，成功即清零） */
     @Transactional
     public SafeUser login(String email, String password) {
         email = normalize(email);
         if (email == null) throw BizException.unauthorized("邮箱或密码不正确");
-        checkLoginRateLimit(email);
-        final String em = email;
-        User u = userRepo.findByEmail(em)
-                .orElseThrow(() -> {
-                    recordLoginFailure(em);
-                    return BizException.unauthorized("邮箱或密码不正确");
-                });
-        if (!verifyPassword(password, u.getPasswordHash())) {
-            recordLoginFailure(em);
+        String lockKey = RateLimit.clientIp(request) + "|" + email;
+        RateLimit.ensureNotLocked(lockKey);
+        User u = userRepo.findByEmail(email).orElse(null);
+        if (u == null || !verifyPassword(password, u.getPasswordHash())) {
+            RateLimit.recordFailure(lockKey);
             throw BizException.unauthorized("邮箱或密码不正确");
         }
-        clearLoginFailures(em);
-        // 合并游客购物车
-        mergeGuestSessionCart(u.getId());
+        RateLimit.clearFailures(lockKey);
+        // 合并游客购物车并作废旧会话（游客会话合并购物车；旧的用户会话直接作废，防止换号登录后残留）
+        String oldToken = readCookie();
+        if (oldToken != null) {
+            Session old = sessionRepo.findByToken(oldToken).orElse(null);
+            if (old != null) {
+                if (old.getUserId() == null) {
+                    mergeGuestCart(old.getId(), u.getId());
+                }
+                sessionRepo.delete(old);
+            }
+        }
         loginUser(u.getId());
         return new SafeUser(u.getId(), u.getEmail(), u.getName(), u.getRole());
     }
@@ -165,6 +160,12 @@ public class AuthService {
                 item.setSessionId(null);
                 cartRepo.save(item);
             }
+        }
+        // 关键：立即落库 session_id=NULL。否则随后的 sessionRepo.delete(old) 触发
+        // Session.cartItems 的 cascade REMOVE 时，级联加载到的是未刷新的旧集合，
+        // 会把刚迁移到用户名下的购物车项当作会话残留一并删除。
+        if (!guestItems.isEmpty()) {
+            cartRepo.flush();
         }
     }
 
@@ -209,64 +210,32 @@ public class AuthService {
                 .orElse(null);
     }
 
-    /** 登录限流检查：连续失败次数过多则拒绝 */
-    private void checkLoginRateLimit(String email) {
-        long[] a = loginAttempts.get(email);
-        if (a != null && a[0] >= MAX_LOGIN_ATTEMPTS) {
-            long remain = a[1] - System.currentTimeMillis();
-            if (remain > 0) {
-                throw BizException.tooMany("尝试次数过多，请约 " + (remain / 60000 + 1) + " 分钟后再试");
-            }
-            loginAttempts.remove(email);
-        }
-    }
-
-    private void recordLoginFailure(String email) {
-        long[] a = loginAttempts.computeIfAbsent(email, k -> new long[2]);
-        if (a[0] >= MAX_LOGIN_ATTEMPTS && a[1] < System.currentTimeMillis()) a[0] = 0;
-        a[0]++;
-        if (a[0] >= MAX_LOGIN_ATTEMPTS) a[1] = System.currentTimeMillis() + LOGIN_LOCK_MILLIS;
-    }
-
-    private void clearLoginFailures(String email) {
-        loginAttempts.remove(email);
-    }
-
-    /** 游客会话创建限流（按来源 IP），防止脚本刷爆 sessions 表 */
-    private void assertGuestSessionQuota() {
-        String ip = clientIp();
-        long now = System.currentTimeMillis();
-        long[] c = guestSessionCounter.computeIfAbsent(ip, k -> new long[]{0, now});
-        if (now - c[1] > GUEST_WINDOW_MILLIS) {
-            c[0] = 0;
-            c[1] = now;
-        }
-        if (c[0] >= MAX_GUEST_SESSIONS_PER_WINDOW) {
-            throw BizException.tooMany("请求过于频繁，请稍后再试");
-        }
-        c[0]++;
-    }
-
-    private String clientIp() {
-        String xff = request.getHeader("X-Forwarded-For");
-        return (xff != null && !xff.isBlank()) ? xff.split(",")[0].trim() : request.getRemoteAddr();
-    }
-
     private String normalize(String email) {
         return email == null ? null : email.trim().toLowerCase();
     }
 
+    private String setCookieSecure() {
+        return cookieSecure ? "; Secure" : "";
+    }
+
     private void setCookie(String token, Date expires) {
-        // 手动拼接以支持 SameSite=Lax
+        // 手动拼接以支持 SameSite=Lax；Secure 由配置控制（开发 http 环境关闭）
         String cookie = SESSION_COOKIE + "=" + token
-                + "; Path=/; HttpOnly; SameSite=Lax"
+                + "; Path=/; HttpOnly; SameSite=Lax" + setCookieSecure()
                 + "; Expires=" + java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
                         .format(expires.toInstant().atZone(java.time.ZoneOffset.UTC));
         response.addHeader("Set-Cookie", cookie);
     }
 
     private void clearCookie() {
-        String cookie = SESSION_COOKIE + "=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0";
+        String cookie = SESSION_COOKIE + "=; Path=/; HttpOnly; SameSite=Lax" + setCookieSecure() + "; Max-Age=0";
         response.addHeader("Set-Cookie", cookie);
+    }
+
+    /** 定时清理过期会话，避免 sessions 表无限增长 */
+    @Scheduled(fixedDelay = 6 * 3600 * 1000L)
+    @Transactional
+    public void purgeExpiredSessions() {
+        sessionRepo.deleteByExpiresAtBefore(new Date());
     }
 }

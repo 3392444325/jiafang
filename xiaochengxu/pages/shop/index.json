@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "官方商城",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f5f2ec",
+  "usingComponents": {
+    "product-card": "/components/product-card/index"
+  }
+}

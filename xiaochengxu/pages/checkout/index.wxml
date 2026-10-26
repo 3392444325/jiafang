@@ -1,0 +1,115 @@
+<view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+
+<block wx:elif="{{items.length}}">
+  <!-- 收货地址 -->
+  <view class="card sec">
+    <view class="sec-title">收货地址</view>
+
+    <block wx:if="{{!noAddress}}">
+      <!-- 已选地址 -->
+      <view class="addr-cur" wx:if="{{selAddr}}">
+        <view class="addr-line1">
+          <text class="addr-name">{{selAddr.name}}</text>
+          <text class="addr-phone">{{selAddr.phone}}</text>
+        </view>
+        <view class="addr-detail">{{selAddr.province}}{{selAddr.city}}{{selAddr.district}} {{selAddr.detail}}</view>
+        <view class="addr-change" bindtap="togglePicker">{{showPicker ? '收起' : '更换'}}</view>
+      </view>
+
+      <!-- 地址选择列表 -->
+      <view wx:if="{{showPicker}}" class="addr-picker">
+        <view
+          class="addr-opt"
+          wx:for="{{addresses}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="pickAddr"
+        >
+          <view class="addr-radio {{item.id === addrId ? 'on' : ''}}"></view>
+          <view class="addr-opt-info">
+            <view class="addr-line1">
+              <text class="addr-name">{{item.name}}</text>
+              <text class="addr-phone">{{item.phone}}</text>
+            </view>
+            <view class="addr-detail">{{item.province}}{{item.city}}{{item.district}} {{item.detail}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="addr-add" bindtap="goAddAddress">＋ 新增收货地址</view>
+    </block>
+
+    <!-- 无地址：手动填写 -->
+    <block wx:else>
+      <view class="frow">
+        <view class="form-label">收件人</view>
+        <input class="field" placeholder="收件人姓名" value="{{form.name}}" data-k="name" bindinput="onFormInput" />
+      </view>
+      <view class="frow">
+        <view class="form-label">手机号</view>
+        <input class="field" type="number" placeholder="手机号码" value="{{form.phone}}" data-k="phone" bindinput="onFormInput" />
+      </view>
+      <view class="frow trio">
+        <view class="fcol">
+          <view class="form-label">省</view>
+          <input class="field" placeholder="省" value="{{form.province}}" data-k="province" bindinput="onFormInput" />
+        </view>
+        <view class="fcol">
+          <view class="form-label">市</view>
+          <input class="field" placeholder="市" value="{{form.city}}" data-k="city" bindinput="onFormInput" />
+        </view>
+        <view class="fcol">
+          <view class="form-label">区</view>
+          <input class="field" placeholder="区" value="{{form.district}}" data-k="district" bindinput="onFormInput" />
+        </view>
+      </view>
+      <view class="frow">
+        <view class="form-label">详细地址</view>
+        <input class="field" placeholder="街道、小区、门牌号" value="{{form.detail}}" data-k="detail" bindinput="onFormInput" />
+      </view>
+      <view class="frow save-row">
+        <text class="save-label">保存到地址簿</text>
+        <switch checked="{{saveAddress}}" color="#8f7a50" bindchange="onSaveAddrChange" />
+      </view>
+    </block>
+  </view>
+
+  <!-- 商品清单 -->
+  <view class="card sec">
+    <view class="sec-title">商品清单</view>
+    <view class="g-item" wx:for="{{items}}" wx:key="id">
+      <image
+        wx:if="{{item.image && !item._err}}"
+        class="g-img"
+        src="{{item.image}}"
+        mode="aspectFill"
+        data-idx="{{index}}"
+        binderror="onImgErr"
+      />
+      <view wx:else class="g-img g-fallback"><text>ST.KELLY</text></view>
+      <view class="g-info">
+        <view class="g-name">{{item.name}}</view>
+        <view class="g-qty">× {{item.qty}}</view>
+      </view>
+      <price fen="{{item.priceFen * item.qty}}" size="sm" />
+    </view>
+  </view>
+
+  <view class="page-foot-space"></view>
+
+  <!-- 底部提交栏 -->
+  <view class="fixed-bar safe-bottom">
+    <view class="bar-total">
+      <text class="bar-total-label">合计</text>
+      <price fen="{{totalFen}}" />
+    </view>
+    <view class="bar-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">
+      {{submitting ? '提交中…' : '提交订单'}}
+    </view>
+  </view>
+</block>
+
+<view wx:else class="empty">
+  <view>购物车是空的，先去挑点好物吧</view>
+  <view class="empty-btn btn-gold" bindtap="goShop">去逛逛</view>
+</view>

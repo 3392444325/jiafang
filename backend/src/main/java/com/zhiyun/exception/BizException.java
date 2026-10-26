@@ -14,5 +14,4 @@ public class BizException extends RuntimeException {
     public static BizException forbidden(String msg) { return new BizException(403, msg); }
     public static BizException notFound(String msg) { return new BizException(404, msg); }
     public static BizException conflict(String msg) { return new BizException(409, msg); }
-    public static BizException tooMany(String msg) { return new BizException(429, msg); }
 }

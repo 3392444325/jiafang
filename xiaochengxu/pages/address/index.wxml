@@ -1,0 +1,33 @@
+<view class="page">
+  <view wx:if="{{loading && !list.length}}" class="empty">加载中…</view>
+
+  <view wx:elif="{{!list.length}}" class="empty">还没有收货地址，快去新增吧</view>
+
+  <block wx:else>
+    <view class="addr-card card" wx:for="{{list}}" wx:key="id">
+      <view class="addr-top">
+        <text class="addr-name">{{item.name}}</text>
+        <text class="addr-phone">{{item.phone}}</text>
+        <text wx:if="{{item.isDefault}}" class="addr-badge">默认</text>
+      </view>
+      <view class="addr-detail">{{item.province}}{{item.city}}{{item.district}}　{{item.detail}}</view>
+      <view class="addr-ops">
+        <view
+          wx:if="{{!item.isDefault}}"
+          class="op"
+          data-id="{{item.id}}"
+          bindtap="setDefault"
+        >设为默认</view>
+        <view class="op" data-idx="{{index}}" bindtap="editAddr">编辑</view>
+        <view class="op op-danger" data-id="{{item.id}}" bindtap="delAddr">删除</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="page-foot-space"></view>
+
+  <!-- 底部新增 -->
+  <view class="fixed-bar safe-bottom">
+    <view class="bar-add" bindtap="goAdd">＋ 新增收货地址</view>
+  </view>
+</view>

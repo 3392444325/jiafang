@@ -22,6 +22,7 @@ public class ProductService {
     @Autowired private CategoryRepository categoryRepo;
     @Autowired private ReviewRepository reviewRepo;
     @Autowired private OrderItemRepository orderItemRepo;
+    @Autowired private SiteContentService siteContentService;
 
     private CardProduct toCard(Product p) {
         return toCard(p, null);
@@ -29,7 +30,7 @@ public class ProductService {
 
     private CardProduct toCard(Product p, String tag) {
         String image = JsonUtil.parseStringList(p.getImages()).isEmpty()
-                ? "/images/products/p01.svg"
+                ? "/images/products/p01.jpg"
                 : JsonUtil.parseStringList(p.getImages()).get(0);
         String resolvedTag = tag != null ? tag
                 : (p.getCompareAtFen() != null ? "限时礼遇" : null);
@@ -45,6 +46,9 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Map<String, Object> getHomeData() {
         List<Category> categories = categoryRepo.findAllByOrderBySortAsc();
+        List<Product> allActive = productRepo.findAllWithCategory();
+        Map<String, List<Product>> prodsByCategory = allActive.stream()
+                .collect(Collectors.groupingBy(Product::getCategoryId));
         List<Map<String, Object>> catList = new ArrayList<>();
         for (Category c : categories) {
             Map<String, Object> m = new LinkedHashMap<>();
@@ -53,12 +57,15 @@ public class ProductService {
             m.put("nameEn", c.getNameEn());
             m.put("tagline", c.getTagline());
             m.put("sort", c.getSort());
-            // 取该分类下 1 件上架商品
-            List<Product> prods = productRepo.findAllWithCategory().stream()
-                    .filter(p -> p.getCategoryId().equals(c.getId()) && "ACTIVE".equals(p.getStatus()))
-                    .limit(1).toList();
-            m.put("image", prods.isEmpty() ? "/images/scenes/scene-1.svg"
-                    : JsonUtil.parseStringList(prods.get(0).getImages()).get(0));
+            prodsByCategory.computeIfAbsent(c.getId(), k -> new ArrayList<>())
+                    .stream()
+                    .filter(p -> "ACTIVE".equals(p.getStatus()))
+                    .limit(1)
+                    .findFirst()
+                    .ifPresentOrElse(
+                            p -> m.put("image", JsonUtil.parseStringList(p.getImages()).stream().findFirst()
+                                    .orElse("/images/scenes/scene-1.jpg")),
+                            () -> m.put("image", "/images/scenes/scene-1.jpg"));
             catList.add(m);
         }
         List<Review> reviews = reviewRepo.findTop6WithUserAndProduct();
@@ -81,11 +88,14 @@ public class ProductService {
             collabMap.put("priceFen", collab.getPriceFen());
             collabMap.put("compareAtFen", collab.getCompareAtFen());
             collabMap.put("images", JsonUtil.parseStringList(collab.getImages()));
+            collabMap.put("status", collab.getStatus());
         }
         Map<String, Object> res = new LinkedHashMap<>();
         res.put("categories", catList);
         res.put("reviews", reviewList);
         res.put("collab", collabMap);
+        // 页面设计后台配置的内容（轮播/版块图片与文案），前台据此动态渲染
+        res.put("content", siteContentService.getAll());
         return res;
     }
 
@@ -117,6 +127,7 @@ public class ProductService {
         res.put("featured", featuredCards);
         res.put("hotSales", hotList);
         res.put("categories", catList);
+        res.put("content", siteContentService.getAll());
         return res;
     }
 

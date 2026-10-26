@@ -39,7 +39,7 @@ async function submit() {
     @submit.prevent="submit"
     class="mt-8 border border-ink/10 bg-ivory p-6"
   >
-    <p class="text-xs tracking-[0.25em] text-ink/50">写下你的评价</p>
+    <p class="text-[14px] tracking-[0.25em] text-ink/80">写下你的评价</p>
     <div class="mt-4 flex items-center gap-2">
       <button
         v-for="n in 5"
@@ -51,11 +51,11 @@ async function submit() {
         :aria-label="`${n} 星`"
         class="cursor-pointer text-2xl leading-none transition-transform hover:scale-110"
       >
-        <span :class="(hover || rating) >= n ? 'text-gold' : 'text-ink/20'">
+        <span :class="(hover || rating) >= n ? 'text-gold' : 'text-ink/70'">
           ★
         </span>
       </button>
-      <span class="ml-2 text-xs tracking-[0.15em] text-ink/45">
+      <span class="ml-2 text-[14px] tracking-[0.15em] text-ink/75">
         {{ rating }} 星
       </span>
     </div>
@@ -67,7 +67,7 @@ async function submit() {
       class="field mt-4"
       required
     />
-    <p v-if="error" class="mt-3 text-xs tracking-[0.15em] text-red-700">{{ error }}</p>
+    <p v-if="error" class="mt-3 text-[14px] tracking-[0.15em] text-red-700">{{ error }}</p>
     <button
       type="submit"
       :disabled="busy"

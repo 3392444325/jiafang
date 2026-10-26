@@ -38,25 +38,25 @@ async function add(buyNow = false) {
 <template>
   <div>
     <div class="flex items-center gap-6">
-      <span class="text-[12px] tracking-[0.25em] text-ink/50">数量</span>
+      <span class="text-[14px] tracking-[0.25em] text-ink/80">数量</span>
       <div class="flex items-center border border-ink/20">
         <button
           @click="qty = Math.max(1, qty - 1)"
-          class="cursor-pointer px-4 py-2.5 text-ink/60 transition-colors hover:text-gold-deep"
+          class="cursor-pointer px-4 py-2.5 text-ink/75 transition-colors hover:text-gold-deep"
           aria-label="减少数量"
         >
           −
         </button>
-        <span class="min-w-12 text-center text-sm">{{ qty }}</span>
+        <span class="min-w-12 text-center text-[15px]">{{ qty }}</span>
         <button
           @click="qty = Math.min(stock, qty + 1)"
-          class="cursor-pointer px-4 py-2.5 text-ink/60 transition-colors hover:text-gold-deep"
+          class="cursor-pointer px-4 py-2.5 text-ink/75 transition-colors hover:text-gold-deep"
           aria-label="增加数量"
         >
           +
         </button>
       </div>
-      <span class="text-[11px] tracking-[0.15em] text-ink/35">
+      <span class="text-[14px] tracking-[0.15em] text-ink/75">
         库存 {{ stock }} 件
       </span>
     </div>
@@ -77,6 +77,6 @@ async function add(buyNow = false) {
         立即购买
       </button>
     </div>
-    <p v-if="error" class="mt-3 text-xs tracking-[0.15em] text-red-700">{{ error }}</p>
+    <p v-if="error" class="mt-3 text-[14px] tracking-[0.15em] text-red-700">{{ error }}</p>
   </div>
 </template>

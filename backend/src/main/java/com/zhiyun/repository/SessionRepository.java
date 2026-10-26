@@ -4,7 +4,6 @@ import com.zhiyun.entity.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Date;
 import java.util.Optional;
 
 public interface SessionRepository extends JpaRepository<Session, String> {
@@ -13,6 +12,5 @@ public interface SessionRepository extends JpaRepository<Session, String> {
 
     void deleteByToken(String token);
 
-    /** 删除全部已过期会话，返回删除条数 */
-    long deleteByExpiresAtBefore(Date time);
+    long deleteByExpiresAtBefore(java.util.Date expires);
 }

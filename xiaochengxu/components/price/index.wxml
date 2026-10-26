@@ -1,0 +1,4 @@
+<view class="price-box {{size}}">
+  <text class="p">{{text}}</text>
+  <text wx:if="{{compareText}}" class="c">{{compareText}}</text>
+</view>

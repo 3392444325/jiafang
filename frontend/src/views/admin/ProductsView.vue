@@ -7,7 +7,7 @@ const yuan = (fen) => '¥' + (fen / 100).toLocaleString()
 
 const IMAGE_OPTIONS = Array.from({ length: 12 }, (_, i) => {
   const n = String(i + 1).padStart(2, '0')
-  return { value: `/images/products/p${n}.svg`, label: `织物质感 ${n}` }
+  return { value: `/images/products/p${n}.jpg`, label: `织物质感 ${n}` }
 })
 
 const products = ref([])
@@ -88,24 +88,24 @@ onMounted(() => {
     <div>
       <!-- 商品列表 -->
       <div class="border border-ink/10 bg-ivory">
-        <div class="border-b border-ink/10 px-6 py-4 text-xs tracking-[0.25em] text-ink/50">
+        <div class="border-b border-ink/10 px-6 py-4 text-[14px] tracking-[0.25em] text-ink/80">
           全部商品（{{ products.length }}）
         </div>
         <div class="divide-y divide-ink/10">
           <div
             v-for="p in products"
             :key="p.id"
-            class="flex flex-wrap items-center gap-4 px-6 py-4 text-sm"
+            class="flex flex-wrap items-center gap-4 px-6 py-4 text-[15px]"
           >
             <span class="min-w-48 flex-1 tracking-[0.08em] text-ink">
               {{ p.name }}
-              <span class="ml-3 text-[10px] uppercase tracking-[0.15em] text-ink/35">
+              <span class="ml-3 text-[13px] uppercase tracking-[0.15em] text-ink/75">
                 {{ p.slug }}
               </span>
             </span>
-            <span class="text-xs text-ink/50">{{ p.categoryName }}</span>
+            <span class="text-[14px] text-ink/80">{{ p.categoryName }}</span>
             <span class="text-gold-deep">{{ yuan(p.priceFen) }}</span>
-            <span class="text-xs text-ink/45">已售 {{ p.sales }}</span>
+            <span class="text-[14px] text-ink/75">已售 {{ p.sales }}</span>
             <form @submit.prevent="saveStock(p)" class="flex items-center gap-2">
               <input
                 v-model.number="p.stock"
@@ -113,20 +113,20 @@ onMounted(() => {
                 min="0"
                 step="1"
                 title="库存"
-                class="field w-20! py-1.5! text-xs"
+                class="field w-20! py-1.5! text-[14px]"
               />
               <button
                 type="submit"
-                class="cursor-pointer border border-ink/20 px-3 py-1.5 text-[10px] tracking-[0.15em] text-ink/70 transition-colors hover:border-gold-deep hover:text-gold-deep"
+                class="cursor-pointer border border-ink/20 px-3 py-1.5 text-[13px] tracking-[0.15em] text-ink/80 transition-colors hover:border-gold-deep hover:text-gold-deep"
               >
                 存
               </button>
             </form>
             <span
-              :class="`border px-2.5 py-0.5 text-[11px] ${
+              :class="`border px-2.5 py-0.5 text-[14px] ${
                 p.status === 'ACTIVE'
                   ? 'border-emerald-700/30 bg-emerald-700/10 text-emerald-800'
-                  : 'border-ink/20 bg-ink/5 text-ink/50'
+                  : 'border-ink/20 bg-ink/5 text-ink/80'
               }`"
             >
               {{ p.status === 'ACTIVE' ? '在售' : '已下架' }}
@@ -134,14 +134,14 @@ onMounted(() => {
             <form @submit.prevent="toggleProduct(p)">
               <button
                 type="submit"
-                class="cursor-pointer border border-ink/20 px-4 py-1.5 text-[11px] tracking-[0.2em] text-ink/70 transition-colors hover:border-gold-deep hover:text-gold-deep"
+                class="cursor-pointer border border-ink/20 px-4 py-1.5 text-[14px] tracking-[0.2em] text-ink/80 transition-colors hover:border-gold-deep hover:text-gold-deep"
               >
                 {{ p.status === 'ACTIVE' ? '下架' : '上架' }}
               </button>
             </form>
             <router-link
               :to="`/admin/products/${p.id}`"
-              class="border border-ink/20 px-4 py-1.5 text-[11px] tracking-[0.2em] text-ink/70 transition-colors hover:border-gold-deep hover:text-gold-deep"
+              class="border border-ink/20 px-4 py-1.5 text-[14px] tracking-[0.2em] text-ink/80 transition-colors hover:border-gold-deep hover:text-gold-deep"
             >
               编辑
             </router-link>
@@ -151,7 +151,7 @@ onMounted(() => {
 
       <!-- 新品上架 -->
       <div class="mt-10 border border-ink/10 bg-ivory">
-        <div class="border-b border-ink/10 px-6 py-4 text-xs tracking-[0.25em] text-ink/50">
+        <div class="border-b border-ink/10 px-6 py-4 text-[14px] tracking-[0.25em] text-ink/80">
           新品上架
         </div>
         <form @submit.prevent="submitProduct" class="grid gap-4 p-6 sm:grid-cols-2">
@@ -183,7 +183,7 @@ onMounted(() => {
             rows="3"
             placeholder="商品描述（选填）"
           />
-          <label class="flex cursor-pointer items-center gap-3 text-xs tracking-[0.15em] text-ink/60">
+          <label class="flex cursor-pointer items-center gap-3 text-[14px] tracking-[0.15em] text-ink/75">
             <input v-model="newProduct.featured" type="checkbox" class="accent-[#8F7A50]" />
             设为首页「当季精选」
           </label>
@@ -195,7 +195,7 @@ onMounted(() => {
 
       <!-- 新增分类 -->
       <div class="mt-10 border border-ink/10 bg-ivory">
-        <div class="border-b border-ink/10 px-6 py-4 text-xs tracking-[0.25em] text-ink/50">
+        <div class="border-b border-ink/10 px-6 py-4 text-[14px] tracking-[0.25em] text-ink/80">
           新增分类
         </div>
         <form @submit.prevent="submitCategory" class="grid gap-4 p-6 sm:grid-cols-4">

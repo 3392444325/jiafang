@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "ST.KELLY",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f5f2ec",
+  "usingComponents": {
+    "product-card": "/components/product-card/index"
+  }
+}

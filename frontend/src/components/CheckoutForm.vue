@@ -77,7 +77,7 @@ async function submit() {
     <!-- 收货信息 -->
     <form @submit.prevent="submit" class="space-y-6 lg:col-span-3">
       <div v-if="addresses.length > 0">
-        <p class="text-[12px] tracking-[0.25em] text-ink/50">地址簿</p>
+        <p class="text-[14px] tracking-[0.25em] text-ink/80">地址簿</p>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
           <button
             type="button"
@@ -85,16 +85,16 @@ async function submit() {
             :key="a.id"
             @click="pickSaved(i)"
             :class="[
-              'cursor-pointer border p-4 text-left text-xs leading-relaxed transition-colors',
+              'cursor-pointer border p-4 text-left text-[14px] leading-relaxed transition-colors',
               useSaved === i ? 'border-gold-deep bg-ivory' : 'border-ink/15 bg-transparent hover:border-ink/40',
             ]"
           >
             <span class="tracking-[0.15em] text-ink">
               {{ a.name }} · {{ a.phone }}
             </span>
-            <span v-if="a.isDefault" class="ml-2 text-[10px] text-gold-deep">默认</span>
+            <span v-if="a.isDefault" class="ml-2 text-[13px] text-gold-deep">默认</span>
             <br />
-            <span class="text-ink/55">
+            <span class="text-ink/80">
               {{ a.province }} {{ a.city }} {{ a.district ?? '' }} {{ a.detail }}
             </span>
           </button>
@@ -102,7 +102,7 @@ async function submit() {
             type="button"
             @click="useSaved = null"
             :class="[
-              'cursor-pointer border p-4 text-left text-xs tracking-[0.2em] transition-colors',
+              'cursor-pointer border p-4 text-left text-[14px] tracking-[0.2em] transition-colors',
               useSaved === null ? 'border-gold-deep bg-ivory' : 'border-ink/15 hover:border-ink/40',
             ]"
           >
@@ -120,17 +120,17 @@ async function submit() {
         <input v-model="form.detail" class="field" placeholder="详细地址（街道、楼栋、门牌号）" required />
       </div>
 
-      <label class="flex cursor-pointer items-center gap-3 text-xs tracking-[0.15em] text-ink/60">
+      <label class="flex cursor-pointer items-center gap-3 text-[14px] tracking-[0.15em] text-ink/75">
         <input v-model="saveAddress" type="checkbox" class="accent-[#8F7A50]" />
         保存到地址簿，下次结算自动填入
       </label>
 
-      <p v-if="error" class="text-xs tracking-[0.15em] text-red-700">{{ error }}</p>
+      <p v-if="error" class="text-[14px] tracking-[0.15em] text-red-700">{{ error }}</p>
 
       <button type="submit" :disabled="busy" class="btn-primary w-full disabled:opacity-50">
         {{ busy ? '正在创建订单…' : '提交订单' }}
       </button>
-      <p class="text-[11px] leading-relaxed tracking-[0.12em] text-ink/40">
+      <p class="text-[14px] leading-relaxed tracking-[0.12em] text-ink/75">
         提交订单后将进入支付环节。本站为演示项目，采用「模拟支付」完成闭环；
         接入微信支付 / 支付宝需企业商户资质，接口位已预留。
       </p>
@@ -138,25 +138,25 @@ async function submit() {
 
     <!-- 订单摘要 -->
     <aside class="h-fit border border-ink/10 bg-ivory p-8 lg:sticky lg:top-28 lg:col-span-2">
-      <p class="text-[11px] uppercase tracking-[0.3em] text-gold-deep">
+      <p class="text-[14px] uppercase tracking-[0.3em] text-gold-deep">
         Order Summary
       </p>
       <div class="mt-6 space-y-4">
         <div v-for="(it, i) in cart.items" :key="i" class="flex items-center gap-4">
           <img :src="it.image" :alt="it.name" class="h-16 w-14 object-cover" />
-          <div class="flex-1 text-xs leading-relaxed">
+          <div class="flex-1 text-[14px] leading-relaxed">
             <p class="tracking-[0.1em] text-ink">{{ it.name }}</p>
-            <p class="mt-1 text-ink/45">× {{ it.qty }}</p>
+            <p class="mt-1 text-ink/75">× {{ it.qty }}</p>
           </div>
-          <p class="text-sm text-gold-deep">{{ yuan(it.priceFen * it.qty) }}</p>
+          <p class="text-[15px] text-gold-deep">{{ yuan(it.priceFen * it.qty) }}</p>
         </div>
       </div>
-      <div class="mt-7 border-t border-ink/10 pt-5 text-sm">
-        <div class="flex justify-between text-ink/55">
+      <div class="mt-7 border-t border-ink/10 pt-5 text-[15px]">
+        <div class="flex justify-between text-ink/80">
           <span>商品小计</span>
           <span>{{ yuan(cart.totalFen) }}</span>
         </div>
-        <div class="mt-2 flex justify-between text-ink/55">
+        <div class="mt-2 flex justify-between text-ink/80">
           <span>运费</span>
           <span>顺丰包邮</span>
         </div>

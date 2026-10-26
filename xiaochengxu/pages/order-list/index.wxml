@@ -1,0 +1,55 @@
+<view class="page">
+  <!-- 状态筛选 -->
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view
+      class="chip {{status === item.key ? 'chip-on' : ''}}"
+      wx:for="{{statuses}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="pickStatus"
+    >
+      {{item.label}}
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+
+  <!-- 订单列表 -->
+  <view wx:elif="{{shown.length}}" class="orders">
+    <view class="order-card card" wx:for="{{shown}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="oc-head">
+        <text class="oc-no">{{item.orderNo}}</text>
+        <text class="oc-status st-{{item.status}}">{{item.statusText}}</text>
+      </view>
+      <view class="oc-goods" wx:if="{{item.first}}">
+        <image
+          wx:if="{{item.first.image && !item._err}}"
+          class="oc-img"
+          src="{{item.first.image}}"
+          mode="aspectFill"
+          data-idx="{{index}}"
+          binderror="onImgErr"
+        />
+        <view wx:else class="oc-img oc-fallback"><text>ST.KELLY</text></view>
+        <view class="oc-g-info">
+          <view class="oc-g-name">{{item.first.nameSnap}}</view>
+          <view class="oc-g-qty">
+            × {{item.first.qty}}<text wx:if="{{item.kinds > 1}}">　等 {{item.totalQty}} 件</text>
+          </view>
+        </view>
+      </view>
+      <view class="oc-foot">
+        <text class="oc-date">{{item.dateText}}</text>
+        <view class="oc-total">
+          <text class="oc-total-label">合计</text>
+          <price fen="{{item.totalFen}}" size="sm" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view>暂无相关订单</view>
+    <view class="empty-btn btn-gold" bindtap="goShop">去逛逛</view>
+  </view>
+</view>

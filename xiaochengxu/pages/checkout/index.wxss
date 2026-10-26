@@ -1,0 +1,191 @@
+.loading-tip {
+  text-align: center;
+  color: var(--muted);
+  padding: 160rpx 0;
+}
+
+.card {
+  margin: 24rpx;
+  padding: 28rpx;
+}
+.sec-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 地址 */
+.addr-cur {
+  position: relative;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+.addr-line1 {
+  display: flex;
+  align-items: baseline;
+  gap: 20rpx;
+}
+.addr-name {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.addr-phone {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+.addr-detail {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.addr-change {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 24rpx;
+  color: var(--gold-deep);
+}
+.addr-picker {
+  margin-top: 8rpx;
+}
+.addr-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.addr-radio {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 2rpx solid var(--clay);
+  margin-top: 6rpx;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.addr-radio.on {
+  border: 10rpx solid var(--gold-deep);
+}
+.addr-opt-info {
+  flex: 1;
+  min-width: 0;
+}
+.addr-add {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--gold-deep);
+  border: 1rpx dashed var(--clay);
+  border-radius: 12rpx;
+  padding: 18rpx 0;
+}
+
+/* 手填表单 */
+.frow {
+  margin-bottom: 20rpx;
+}
+.frow.trio {
+  display: flex;
+  gap: 16rpx;
+}
+.fcol {
+  flex: 1;
+  min-width: 0;
+}
+.save-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+.save-label {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+
+/* 商品清单 */
+.g-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.g-item:last-child {
+  border-bottom: none;
+}
+.g-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  background: var(--sand);
+  flex-shrink: 0;
+}
+.g-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clay);
+  font-size: 26rpx;
+  letter-spacing: 4rpx;
+}
+.g-info {
+  flex: 1;
+  min-width: 0;
+}
+.g-name {
+  font-size: 26rpx;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.g-qty {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+/* 底部提交栏 */
+.page-foot-space {
+  height: 160rpx;
+}
+.bar-total {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+.bar-total-label {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+.bar-btn {
+  width: 260rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  background: var(--ink);
+  color: var(--ivory);
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+}
+.bar-btn.disabled {
+  opacity: 0.5;
+}
+
+/* 空态按钮 */
+.empty-btn {
+  display: inline-block;
+  margin-top: 32rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 64rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+}

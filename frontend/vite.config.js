@@ -2,8 +2,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
-// 织云 ZHIYUN LIVING — Vue 3 + Vite 前端
-// 后端 API：http://localhost:8080/api （通过 vite proxy 转发，前端代码中用 /api 前缀）
+// ST.KELLY — Vue 3 + Vite 前端
+// 后端 API：http://localhost:8082/api （通过 vite proxy 转发，前端代码中用 /api 前缀）
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -15,7 +15,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8082',
         changeOrigin: true,
       },
     },

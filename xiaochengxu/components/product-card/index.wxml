@@ -1,0 +1,23 @@
+<view class="pc" bindtap="goDetail" hover-class="pc-hover">
+  <view class="pc-img-wrap">
+    <image
+      wx:if="{{img && !err}}"
+      class="pc-img"
+      src="{{img}}"
+      mode="aspectFill"
+      lazy-load="{{true}}"
+      binderror="onImgErr"
+    />
+    <view wx:else class="pc-img-fallback">
+      <text class="pc-fallback-txt">ST.KELLY</text>
+    </view>
+    <view wx:if="{{product.tag}}" class="pc-tag">{{product.tag}}</view>
+  </view>
+  <view class="pc-body">
+    <text class="pc-name">{{product.name}}</text>
+    <text wx:if="{{product.subtitle}}" class="pc-sub">{{product.subtitle}}</text>
+    <view class="pc-price-row">
+      <price fen="{{product.priceFen}}" compare="{{product.compareAtFen}}" size="sm" />
+    </view>
+  </view>
+</view>

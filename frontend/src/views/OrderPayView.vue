@@ -48,7 +48,7 @@ onMounted(async () => {
           <h1 class="mt-4 font-display text-3xl tracking-[0.15em] text-ink">
             订单支付
           </h1>
-          <p class="mt-3 text-xs tracking-[0.2em] text-ink/45">
+          <p class="mt-3 text-[14px] tracking-[0.2em] text-ink/75">
             订单号 {{ order.orderNo }} · {{ formatDateTime(order.createdAt) }}
           </p>
         </div>
@@ -65,16 +65,16 @@ onMounted(async () => {
         </div>
 
         <div class="mt-12 border border-ink/10 bg-ivory">
-          <div class="border-b border-ink/10 px-6 py-4 text-xs tracking-[0.25em] text-ink/50">
+          <div class="border-b border-ink/10 px-6 py-4 text-[14px] tracking-[0.25em] text-ink/80">
             商品清单（{{ order.items.length }}）
           </div>
           <div class="divide-y divide-ink/10">
             <div
               v-for="it in order.items"
               :key="it.id"
-              class="flex items-center justify-between px-6 py-4 text-sm"
+              class="flex items-center justify-between px-6 py-4 text-[15px]"
             >
-              <span class="tracking-[0.1em] text-ink/80">
+              <span class="tracking-[0.1em] text-ink/90">
                 {{ it.nameSnap }} × {{ it.qty }}
               </span>
               <span class="text-gold-deep">
@@ -83,21 +83,21 @@ onMounted(async () => {
             </div>
           </div>
           <div class="flex items-baseline justify-between border-t border-ink/10 px-6 py-5">
-            <span class="text-sm tracking-[0.2em] text-ink">应付合计（顺丰包邮）</span>
+            <span class="text-[15px] tracking-[0.2em] text-ink">应付合计（顺丰包邮）</span>
             <span class="font-display text-3xl text-gold-deep">
               {{ yuan(order.totalFen) }}
             </span>
           </div>
         </div>
 
-        <p class="mt-8 text-center text-[11px] leading-relaxed tracking-[0.12em] text-ink/40">
+        <p class="mt-8 text-center text-[14px] leading-relaxed tracking-[0.12em] text-ink/75">
           本站为演示项目，采用「模拟支付」完成闭环；接入微信支付 / 支付宝需企业商户资质，接口位已预留。
         </p>
       </template>
 
       <!-- 未找到 -->
       <div v-else-if="loaded && notFound" class="py-24 text-center">
-        <p class="font-display text-2xl tracking-[0.15em] text-ink/60">
+        <p class="font-display text-2xl tracking-[0.15em] text-ink/75">
           订单不存在
         </p>
         <router-link to="/orders" class="btn-primary mt-10">

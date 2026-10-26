@@ -28,7 +28,9 @@ async function submit() {
     } else {
       await auth.register(email.value, password.value, name.value)
     }
-    const redirect = route.query.redirect ? String(route.query.redirect) : '/'
+    const redirect = route.query.redirect
+      ? String(route.query.redirect)
+      : (auth.isAdmin ? '/admin' : '/shop')
     router.push(redirect)
   } catch (e) {
     error.value = e.message || '操作失败，请重试'
@@ -43,7 +45,7 @@ async function submit() {
     <div class="text-center">
       <p class="eyebrow">{{ isLogin ? 'Sign In' : 'Join Zhiyun' }}</p>
       <h1 class="mt-4 font-display text-3xl tracking-[0.2em] text-ink">
-        {{ isLogin ? '欢迎回来' : '加入织云' }}
+        {{ isLogin ? '欢迎回来' : '加入ST.KELLY' }}
       </h1>
       <div class="mx-auto mt-5 h-px w-12 bg-gold-deep/60" />
     </div>
@@ -71,14 +73,14 @@ async function submit() {
         required
         minlength="6"
       />
-      <p v-if="error" class="text-xs tracking-[0.15em] text-red-700">{{ error }}</p>
+      <p v-if="error" class="text-[14px] tracking-[0.15em] text-red-700">{{ error }}</p>
       <button type="submit" :disabled="busy" class="btn-primary w-full disabled:opacity-50">
         {{ busy ? '处理中…' : isLogin ? '登 录' : '注 册' }}
       </button>
     </form>
 
-    <p class="mt-8 text-center text-xs tracking-[0.15em] text-ink/50">
-      {{ isLogin ? '还没有织云账户？' : '已经是会员？' }}
+    <p class="mt-8 text-center text-[14px] tracking-[0.15em] text-ink/80">
+      {{ isLogin ? '还没有ST.KELLY账户？' : '已经是会员？' }}
       <router-link
         :to="isLogin ? '/register' : '/login'"
         class="ml-2 text-gold-deep transition-colors hover:text-ink"
@@ -89,11 +91,11 @@ async function submit() {
 
     <p
       v-if="isLogin"
-      class="mt-6 border border-ink/10 bg-ivory px-4 py-3 text-center text-[11px] leading-relaxed tracking-[0.1em] text-ink/45"
+      class="mt-6 border border-ink/10 bg-ivory px-4 py-3 text-center text-[14px] leading-relaxed tracking-[0.1em] text-ink/75"
     >
       客服热线 400-860-1988（9:00 - 21:00）
       <br />
-      service@zhiyun.cn · 登录遇到问题可随时联系我们
+      service@st-kelly.cn · 登录遇到问题可随时联系我们
     </p>
   </div>
 </template>

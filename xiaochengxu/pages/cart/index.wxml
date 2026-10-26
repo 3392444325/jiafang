@@ -1,0 +1,48 @@
+<view wx:if="{{loading}}" class="loading-tip">加载中…</view>
+
+<block wx:elif="{{items.length}}">
+  <view class="cart-list">
+    <view class="cart-item card" wx:for="{{items}}" wx:key="id">
+      <image
+        wx:if="{{item.image && !item._err}}"
+        class="ci-img"
+        src="{{item.image}}"
+        mode="aspectFill"
+        data-idx="{{index}}"
+        binderror="onImgErr"
+      />
+      <view wx:else class="ci-img ci-fallback"><text>ST.KELLY</text></view>
+
+      <view class="ci-mid">
+        <view class="ci-name">{{item.name}}</view>
+        <view class="ci-price"><price fen="{{item.priceFen}}" size="sm" /></view>
+        <view wx:if="{{item.tight}}" class="ci-tight">仅剩 {{item.stock}} 件</view>
+      </view>
+
+      <view class="ci-right">
+        <view class="ci-del" data-idx="{{index}}" bindtap="onRemove">删除</view>
+        <view class="stepper">
+          <view class="step-btn" data-idx="{{index}}" data-d="-1" bindtap="onStep">−</view>
+          <text class="step-num">{{item.qty}}</text>
+          <view class="step-btn" data-idx="{{index}}" data-d="1" bindtap="onStep">＋</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="page-foot-space"></view>
+</block>
+
+<view wx:else class="empty">
+  <view>购物车还是空的</view>
+  <view class="empty-btn btn-gold" bindtap="goShop">去逛逛</view>
+</view>
+
+<!-- 底部结算栏 -->
+<view class="fixed-bar safe-bottom">
+  <view class="bar-total">
+    <text class="bar-total-label">合计</text>
+    <price fen="{{totalFen}}" />
+  </view>
+  <view class="bar-btn {{items.length ? '' : 'disabled'}}" bindtap="goCheckout">去结算</view>
+</view>

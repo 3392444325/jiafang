@@ -1,0 +1,133 @@
+.loading-tip {
+  text-align: center;
+  color: var(--muted);
+  padding: 160rpx 0;
+}
+
+/* 商品行 */
+.cart-list {
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx;
+}
+.ci-img {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  background: var(--sand);
+  flex-shrink: 0;
+}
+.ci-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clay);
+  font-size: 32rpx;
+  letter-spacing: 4rpx;
+}
+.ci-mid {
+  flex: 1;
+  min-width: 0;
+}
+.ci-name {
+  font-size: 28rpx;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.ci-price {
+  margin-top: 8rpx;
+}
+.ci-tight {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #b04a42;
+}
+.ci-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  align-self: stretch;
+  padding: 4rpx 0;
+}
+.ci-del {
+  font-size: 22rpx;
+  color: var(--muted);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 4rpx 20rpx;
+}
+
+/* 步进器 */
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+.step-btn {
+  width: 56rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  color: var(--ink-soft);
+  background: var(--linen);
+}
+.step-num {
+  width: 64rpx;
+  text-align: center;
+  font-size: 26rpx;
+}
+
+/* 底部结算栏 */
+.page-foot-space {
+  height: 160rpx;
+}
+.bar-total {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+.bar-total-label {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+.bar-btn {
+  width: 240rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  background: var(--ink);
+  color: var(--ivory);
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+}
+.bar-btn.disabled {
+  opacity: 0.5;
+}
+
+/* 空态按钮 */
+.empty-btn {
+  display: inline-block;
+  margin-top: 32rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 64rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+}

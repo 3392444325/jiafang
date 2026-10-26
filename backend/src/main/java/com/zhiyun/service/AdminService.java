@@ -6,6 +6,7 @@ import com.zhiyun.exception.BizException;
 import com.zhiyun.repository.*;
 import com.zhiyun.util.FormatUtil;
 import com.zhiyun.util.JsonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * 后台管理服务 —— 移植自 app/admin/actions.ts 与 app/admin 各 page.tsx 的数据查询
  * 所有方法均要求当前用户为 ADMIN
  */
+@Slf4j
 @Service
 public class AdminService {
 
@@ -26,6 +28,7 @@ public class AdminService {
     @Autowired private UserRepository userRepo;
     @Autowired private ReviewRepository reviewRepo;
     @Autowired private LeadRepository leadRepo;
+    @Autowired private OrderItemRepository orderItemRepo;
 
     /** 校验管理员权限 */
     public void assertAdmin(SafeUser user) {
@@ -181,20 +184,23 @@ public class AdminService {
     }
 
     @Transactional
-    public String createProduct(String name, String categoryId, double priceYuan,
-                                String description, String image, boolean featured) {
+    public String createProduct(String name, String subtitle, String categoryId, double priceYuan,
+                                int stock, String description, List<String> images, boolean featured) {
         if (isBlank(name) || isBlank(categoryId) || priceYuan <= 0) {
             throw BizException.bad("请填写完整商品信息");
         }
         Product p = new Product();
         p.setSlug("zy-" + Long.toString(System.currentTimeMillis(), 36));
         p.setName(name);
+        p.setSubtitle(isBlank(subtitle) ? null : subtitle);
         p.setCategoryId(categoryId);
         p.setDescription(isBlank(description) ? "织云出品，以东方织造致一世安眠。" : description);
         p.setPriceFen((int) Math.round(priceYuan * 100));
-        p.setImages(JsonUtil.write(List.of(image != null && !image.isBlank() ? image : "/images/products/p01.svg")));
+        List<String> imgs = images == null ? List.of()
+                : images.stream().filter(s -> s != null && !s.isBlank()).toList();
+        p.setImages(JsonUtil.write(imgs.isEmpty() ? List.of("/images/products/p01.jpg") : imgs));
         p.setFeatured(featured);
-        p.setStock(999);
+        p.setStock(stock > 0 ? stock : 999);
         p.setSales(0);
         p.setStatus("ACTIVE");
         return productRepo.save(p).getId();
@@ -202,7 +208,8 @@ public class AdminService {
 
     @Transactional
     public void updateProduct(String id, String name, String subtitle, String description,
-                              String categoryId, double priceYuan, int stock, boolean featured) {
+                              String categoryId, double priceYuan, int stock, boolean featured,
+                              List<String> images) {
         if (isBlank(id) || isBlank(name) || isBlank(categoryId)
                 || priceYuan <= 0 || stock < 0) {
             throw BizException.bad("参数错误");
@@ -216,6 +223,10 @@ public class AdminService {
         p.setPriceFen((int) Math.round(priceYuan * 100));
         p.setStock(stock);
         p.setFeatured(featured);
+        if (images != null) {
+            List<String> imgs = images.stream().filter(s -> s != null && !s.isBlank()).toList();
+            p.setImages(JsonUtil.write(imgs.isEmpty() ? List.of("/images/products/p01.jpg") : imgs));
+        }
         productRepo.save(p);
     }
 
@@ -253,17 +264,19 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> listOrders(String status, String q) {
-        List<Order> all = orderRepo.findAllWithUserAndItems();
-        List<Order> filtered = all.stream()
-                .filter(o -> "all".equals(status) || status == null || status.equals(o.getStatus()))
-                .filter(o -> q == null || q.isBlank()
-                        || (o.getOrderNo() != null && o.getOrderNo().contains(q)))
-                .toList();
+        // 数据库级过滤，避免全表加载后内存过滤
+        boolean hasStatus = status != null && !"all".equals(status);
+        boolean hasQ = q != null && !q.isBlank();
+        List<Order> filtered = orderRepo.searchOrders(
+                hasStatus ? status : null,
+                hasQ ? q : null);
         List<Map<String, Object>> list = filtered.stream().map(o -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("id", o.getId());
             m.put("orderNo", o.getOrderNo());
             m.put("status", o.getStatus());
+            m.put("cancelRequested", Boolean.TRUE.equals(o.getCancelRequested()));
+            m.put("cancelRequestedAt", o.getCancelRequestedAt());
             m.put("totalFen", o.getTotalFen());
             m.put("createdAt", o.getCreatedAt());
             m.put("paidAt", o.getPaidAt());
@@ -287,12 +300,65 @@ public class AdminService {
         if (!Set.of("PENDING_PAYMENT", "PAID", "SHIPPED", "COMPLETED", "CANCELLED").contains(status)) {
             throw BizException.bad("订单状态无效");
         }
-        Order o = orderRepo.findById(id)
+        Order o = orderRepo.findByIdWithItems(id)
                 .orElseThrow(() -> BizException.notFound("订单不存在"));
+        String from = o.getStatus();
+        if (from.equals(status)) return;
+
+        // 状态机：禁止非法流转（如 PENDING_PAYMENT→SHIPPED/COMPLETED、CANCELLED 再流转）
+        Set<String> allowed = switch (status) {
+            case "PAID" -> Set.of("PENDING_PAYMENT");
+            case "SHIPPED" -> Set.of("PAID");
+            case "COMPLETED" -> Set.of("SHIPPED", "PAID");
+            case "CANCELLED" -> Set.of("PENDING_PAYMENT", "PAID");
+            default -> Set.of();
+        };
+        if (!allowed.contains(from)) {
+            throw BizException.bad("订单状态不允许从 " + from + " 变更为 " + status);
+        }
+
         o.setStatus(status);
         if ("PAID".equals(status) && o.getPaidAt() == null) {
             o.setPaidAt(new Date());
         }
+        // 订单进入取消/完成后清除客户的撤销申请标记
+        if ("CANCELLED".equals(status) || "COMPLETED".equals(status)) {
+            o.setCancelRequested(false);
+            o.setCancelRequestedAt(null);
+        }
+        if ("CANCELLED".equals(status)) {
+            // 回补库存与销量（仅从非 CANCELLED 状态取消，此处 from 一定非 CANCELLED）
+            for (OrderItem it : orderItemRepo.findByOrderId(id)) {
+                productRepo.restoreStock(it.getProductId(), it.getQty());
+            }
+        }
+        orderRepo.save(o);
+    }
+
+    /** 商家同意客户的撤销申请：退款取消（回补库存）并清除标记 */
+    @Transactional
+    public void approveCancel(String id) {
+        Order o = orderRepo.findById(id)
+                .orElseThrow(() -> BizException.notFound("订单不存在"));
+        if (!Boolean.TRUE.equals(o.getCancelRequested())) {
+            throw BizException.bad("该订单没有待处理的撤销申请");
+        }
+        if (!"PAID".equals(o.getStatus())) {
+            throw BizException.bad("仅已付款订单可审核退款取消");
+        }
+        updateOrderStatus(id, "CANCELLED");
+    }
+
+    /** 商家拒绝客户的撤销申请：仅清除标记，订单保持已付款 */
+    @Transactional
+    public void rejectCancel(String id) {
+        Order o = orderRepo.findById(id)
+                .orElseThrow(() -> BizException.notFound("订单不存在"));
+        if (!Boolean.TRUE.equals(o.getCancelRequested())) {
+            throw BizException.bad("该订单没有待处理的撤销申请");
+        }
+        o.setCancelRequested(false);
+        o.setCancelRequestedAt(null);
         orderRepo.save(o);
     }
 
@@ -332,11 +398,10 @@ public class AdminService {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cols.length; i++) {
             if (i > 0) sb.append(",");
-            String v = cols[i] == null ? "" : cols[i].replace("\"", "\"\"");
-            // 防 CSV 公式注入：以 = + - @ 或制表符开头的内容前加单引号，避免 Excel 执行公式
-            if (!v.isEmpty() && "=+-@\t\r".indexOf(v.charAt(0)) >= 0) {
-                v = "'" + v;
-            }
+            String v = cols[i] == null ? "" : cols[i];
+            v = v.replace("\"", "\"\"");
+            // 防 CSV 公式注入：以 = + - @ 开头的字段前加单引号
+            if (v.matches("^[=+\\-@].*")) v = "'" + v;
             sb.append("\"").append(v).append("\"");
         }
         return sb.toString();

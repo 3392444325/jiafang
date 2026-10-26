@@ -1,0 +1,91 @@
+.page {
+  padding-bottom: 40rpx;
+}
+
+/* 搜索 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 20rpx 24rpx;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.search-input {
+  flex: 1;
+  background: var(--linen);
+  border-radius: 999rpx;
+  height: 68rpx;
+  padding: 0 28rpx;
+  font-size: 26rpx;
+}
+.search-ph {
+  color: var(--muted);
+}
+.search-btn {
+  color: var(--gold-deep);
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+}
+
+/* 分类 chips */
+.chips {
+  white-space: nowrap;
+  padding: 20rpx 24rpx 4rpx;
+}
+.chip {
+  display: inline-block;
+  padding: 10rpx 28rpx;
+  margin-right: 16rpx;
+  border-radius: 999rpx;
+  background: #fff;
+  border: 1rpx solid var(--line);
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+.chip-on {
+  background: var(--ink);
+  color: var(--ivory);
+  border-color: var(--ink);
+}
+
+/* 排序 */
+.sorts {
+  display: flex;
+  align-items: center;
+  gap: 28rpx;
+  padding: 20rpx 24rpx;
+}
+.sort {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+.sort-on {
+  color: var(--gold-deep);
+  font-weight: 600;
+}
+.count {
+  margin-left: auto;
+  font-size: 22rpx;
+  color: var(--muted);
+}
+
+/* 网格 */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  padding: 0 24rpx;
+}
+.grid-item {
+  width: calc(50% - 10rpx);
+}
+
+.loading-more {
+  text-align: center;
+  color: var(--muted);
+  font-size: 22rpx;
+  padding: 30rpx 0;
+}

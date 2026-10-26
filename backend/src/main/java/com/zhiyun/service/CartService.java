@@ -4,6 +4,7 @@ import com.zhiyun.dto.CartEntry;
 import com.zhiyun.dto.CartOwner;
 import com.zhiyun.entity.CartItem;
 import com.zhiyun.entity.Product;
+import com.zhiyun.entity.Session;
 import com.zhiyun.exception.BizException;
 import com.zhiyun.repository.CartItemRepository;
 import com.zhiyun.repository.ProductRepository;
@@ -23,9 +24,10 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public long getCartCount() {
-        CartOwner owner = authService.resolveCartOwner();
-        return owner.isUser() ? cartRepo.countByUserId(owner.userId())
-                : cartRepo.countBySessionId(owner.sessionId());
+        CartOwner owner = authService.resolveCartOwner(false);
+        if (owner == null) return 0;
+        return owner.isUser() ? cartRepo.sumQtyByUserId(owner.userId())
+                : cartRepo.sumQtyBySessionId(owner.sessionId());
     }
 
     @Transactional
@@ -36,7 +38,7 @@ public class CartService {
         if (!"ACTIVE".equals(product.getStatus())) {
             throw BizException.notFound("商品不存在或已下架");
         }
-        CartOwner owner = authService.resolveCartOwner();
+        CartOwner owner = authService.resolveCartOwner(true);
 
         if (owner.isUser()) {
             CartItem existing = cartRepo.findByProductIdAndUserId(productId, owner.userId()).orElse(null);
@@ -63,8 +65,8 @@ public class CartService {
                 cartRepo.save(item);
             }
         }
-        return owner.isUser() ? cartRepo.countByUserId(owner.userId())
-                : cartRepo.countBySessionId(owner.sessionId());
+        return owner.isUser() ? cartRepo.sumQtyByUserId(owner.userId())
+                : cartRepo.sumQtyBySessionId(owner.sessionId());
     }
 
     @Transactional
@@ -83,14 +85,15 @@ public class CartService {
     /** 购物车页面：带商品详情的条目列表 */
     @Transactional(readOnly = true)
     public List<CartEntry> getCartItems() {
-        CartOwner owner = authService.resolveCartOwner();
+        CartOwner owner = authService.resolveCartOwner(false);
+        if (owner == null) return List.of();
         List<CartItem> rows = owner.isUser()
                 ? cartRepo.findByUserIdWithProduct(owner.userId())
                 : cartRepo.findBySessionIdWithProduct(owner.sessionId());
         return rows.stream().map(r -> {
             Product p = r.getProduct();
             String image = JsonUtil.parseStringList(p.getImages()).isEmpty()
-                    ? "/images/products/p01.svg"
+                    ? "/images/products/p01.jpg"
                     : JsonUtil.parseStringList(p.getImages()).get(0);
             return new CartEntry(r.getId(), p.getSlug(), p.getName(), image,
                     p.getPriceFen(), r.getQty(), p.getStock());
@@ -99,10 +102,11 @@ public class CartService {
 
     private CartItem assertOwned(String id) {
         CartItem item = cartRepo.findById(id).orElseThrow(() -> BizException.notFound("条目不存在"));
-        CartOwner owner = authService.resolveCartOwner();
+        CartOwner owner = authService.resolveCartOwner(false);
+        if (owner == null) throw BizException.forbidden("无权操作");
         boolean owned = owner.isUser()
                 ? owner.userId().equals(item.getUserId())
-                : owner.sessionId().equals(item.getSessionId());
+                : owner.sessionId() != null && owner.sessionId().equals(item.getSessionId());
         if (!owned) throw BizException.forbidden("无权操作");
         return item;
     }

@@ -1,22 +1,15 @@
 package com.zhiyun.repository;
 
 import com.zhiyun.entity.Product;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, String> {
     Optional<Product> findBySlug(String slug);
-
-    /** 悲观锁批量锁定商品（下单扣库存防超卖） */
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select p from Product p where p.id in :ids")
-    List<Product> findAllByIdForUpdate(@Param("ids") List<String> ids);
 
     @Query("select p from Product p left join fetch p.category")
     List<Product> findAllWithCategory();
@@ -34,4 +27,22 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("select p from Product p left join fetch p.category order by p.sales desc")
     List<Product> findAllOrderBySalesDesc();
+
+    /** 条件扣库存：仅当库存充足时扣减并增加销量，返回受影响行数（0=库存不足） */
+    @Modifying
+    @Query("""
+            update Product p
+            set p.stock = p.stock - :qty, p.sales = p.sales + :qty
+            where p.id = :id and p.stock >= :qty
+            """)
+    int deductStock(String id, int qty);
+
+    /** 回补库存与销量（订单取消） */
+    @Modifying
+    @Query("""
+            update Product p
+            set p.stock = p.stock + :qty, p.sales = case when p.sales >= :qty then p.sales - :qty else 0 end
+            where p.id = :id
+            """)
+    int restoreStock(String id, int qty);
 }

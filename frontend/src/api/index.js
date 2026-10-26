@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-// 统一 API 客户端：基于 /api 前缀（vite dev proxy 转发到 http://localhost:8080）
+// 统一 API 客户端：基于 /api 前缀（vite dev proxy 转发到 http://localhost:8082）
 // 所有请求携带 cookie（withCredentials）以维持 session
 const http = axios.create({
   baseURL: '/api',
@@ -57,6 +57,8 @@ export const orderApi = {
   create: (data) => http.post('/orders', data),
   detail: (id) => http.get(`/orders/${id}`),
   pay: (id, method) => http.post(`/orders/${id}/pay`, { method }),
+  cancel: (id) => http.post(`/orders/${id}/cancel`),
+  requestCancel: (id) => http.post(`/orders/${id}/cancel-request`),
 }
 
 // ============== 评价 ==============
@@ -67,6 +69,34 @@ export const reviewApi = {
 // ============== 商机线索 ==============
 export const leadApi = {
   submit: (data) => http.post('/leads', data),
+}
+
+// ============== 品牌官网内容（公开） ==============
+export const contentApi = {
+  all: () => http.get('/content'), // { content: {...site_content}, news: [已发布文章] }
+  newsDetail: (id) => http.get(`/news/${id}`),
+}
+
+// ============== 页面设计后台（独立入口 /designer） ==============
+export const designerApi = {
+  content: () => http.get('/designer/content'),
+  saveContent: (data) => http.post('/designer/content/save', data),
+  upload: (file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return http.post('/designer/upload', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
+    })
+  },
+  products: () => http.get('/designer/products'),
+  createProduct: (data) => http.post('/designer/products', data),
+  updateProductImages: (id, images) =>
+    http.post(`/designer/products/${id}/images`, { images }),
+  newsList: () => http.get('/designer/news'),
+  newsCreate: (data) => http.post('/designer/news', data),
+  newsUpdate: (data) => http.post('/designer/news/update', data),
+  newsDelete: (id) => http.post('/designer/news/delete', { id }),
 }
 
 // ============== 后台管理 ==============
@@ -81,6 +111,8 @@ export const adminApi = {
   createCategory: (data) => http.post('/admin/categories/create', data),
   orders: (params) => http.get('/admin/orders', { params }),
   updateOrderStatus: (id, status) => http.post('/admin/orders/status', { id, status }),
+  approveCancel: (id) => http.post('/admin/orders/cancel-approve', { id }),
+  rejectCancel: (id) => http.post('/admin/orders/cancel-reject', { id }),
   exportOrdersCsv: () =>
     http.get('/admin/orders/export', { responseType: 'blob' }),
   customers: () => http.get('/admin/customers'),
